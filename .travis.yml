@@ -9,6 +9,6 @@ script:
 - python -m unittest discover
 deploy:
 - provider: heroku
-- api_key:
+  api_key:
     secure: FcK5TGknxwnw/wiY1lHdzRDTKlt++o6mg8U/Vk7tK70/Ao99u+bqx6RqjtPk6P414SuR3BzHEUGZ35r7c8GI1CXR92hMwqfdHV6R9h+v4Nkn6QSgb2xkbDqOkU7c2UXXBtGyNA5t1IDsJKEviZKNsUhohowZgmujuk3Vuran0/ZM0qYstwVEKgZu49D2eSF7yfE5UME+1lv5KZtoVJIbTxc9VsXM43ZrkP5/SH4fphhSDuWm+vumVe8HurDOOm7IODPDI6EopBesBJaiddzRfMSgQhu4zcxT1/Ifr1poLilxHVZJsjiDIHAXhd2ZHCgoh4JoARbuWtHN6ZLX6k4G8AO2w/hvr8mt2kBd7lgEju8J5eFOl7baysc4u+HGW31DSIJSVxhBUa/tX7/nNmnLVlu2jOOfP+YvpApKXtqFyOzzyx4zoodU/ZjHsNyHm0HWDKpEYmFbq/YJNWF/hykk0FcZUROOukgRr7yAtSTlq7/gf3HiuKyFfIV0NAENcdLKnm3pKJsbflRyUFzGSZC173XQjRkCaEKFqYq/qeQ3it78ogGmJYa5rIST/0BAUoiJQn27uve1w7gNforeolVr5KWesTJen645e7bcvXUGagpJZ3h3nlnfv6mG75Ldk2vbhtomYMOw1f2TG3teqcBoeOqKDRDsG9FQzE5DZLKbetM=
-- app: screwdriver-api-heroku
+  app: screwdriver-api-heroku
