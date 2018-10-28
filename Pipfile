@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 itsdangerous = "==0.24"
 six = "==1.9.0"
-Flask = "==0.10.1"
+Flask = "==0.12.3"
 Flask-HTTPAuth = "==2.3.0"
 Flask-RESTful = "==0.3.1"
 "Jinja2" = "==2.7.3"

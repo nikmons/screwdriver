@@ -1,10 +1,12 @@
 -i https://pypi.org/simple
 aniso8601==4.0.1
 astroid==2.0.4
+click==7.0
 colorama==0.4.0
+coverage==4.5.1
 flask-httpauth==2.3.0
 flask-restful==0.3.1
-flask==0.10.1
+flask==0.12.3
 gunicorn==19.9.0
 isort==4.3.4
 itsdangerous==0.24
