@@ -11,6 +11,7 @@ app = Flask(__name__, static_url_path="")
 api = Api(app)
 auth = HTTPBasicAuth()
 
+# Test comment
 
 @auth.get_password
 def get_password(username):
