@@ -8,6 +8,7 @@ pylint = "*"
 flask = "*"
 flask-restful = "*"
 flask-httpauth = "*"
+gunicorn = "*"
 
 [dev-packages]
 
