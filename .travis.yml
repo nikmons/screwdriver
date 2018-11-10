@@ -5,8 +5,9 @@ python:
 install:
 - pip install -r api/requirements.txt
 - pip install codecov
-script:
+before_script:
 - cd api
+script:
 - python -m unittest discover
 deploy:
 - provider: heroku
