@@ -6,12 +6,15 @@ Flask-RESTful extension."""
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, static_url_path="")
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:root@localhost:5432/store_test'
+
 api = Api(app)
 auth = HTTPBasicAuth()
-
-# Test comment
+db =  SQLAlchemy(app)
+import models
 
 @auth.get_password
 def get_password(username):
@@ -26,6 +29,7 @@ def unauthorized():
     # auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
+"""Task Array"""
 tasks = [
     {
         'id': 1,

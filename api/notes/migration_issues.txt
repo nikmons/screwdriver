@@ -1,0 +1,3 @@
+Flask-SQLAlchemy migration issues
+
+https://github.com/miguelgrinberg/Flask-Migrate/issues/50
