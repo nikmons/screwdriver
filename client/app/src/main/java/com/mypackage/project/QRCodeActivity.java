@@ -20,9 +20,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 public class QRCodeActivity extends AppCompatActivity {
-    private int width, height;
+    private int width, height, nextToAction;
     private ImageView imageView;
-    private String newState, deviceStateOrTrackingNumber, qrCodeStr;
+    private String qrCodeStr;
     private long serviceId;
     private boolean isCourier;
 
@@ -37,8 +37,7 @@ public class QRCodeActivity extends AppCompatActivity {
         final QRCodeActivity qrCodeActivity = this;
         Intent myIntent = getIntent();
         serviceId = myIntent.getLongExtra("serviceId", -1);
-        newState = myIntent.getStringExtra("newState");
-        deviceStateOrTrackingNumber = myIntent.getStringExtra("deviceStateOrTrackingNumber");
+        nextToAction = myIntent.getIntExtra("nextToAction", -1);
         isCourier = myIntent.getBooleanExtra("isCourier", false);
         final EditText editText = (EditText) findViewById(R.id.editText);
         imageView = (ImageView) findViewById(R.id.qrCode);
@@ -99,50 +98,8 @@ public class QRCodeActivity extends AppCompatActivity {
                 alert.show();
             }
         });
+        qrCodeStr = serviceId + " " + nextToAction + " " + isCourier;
         if (!isCourier) {
-            imageView.setOnLongClickListener(new View.OnLongClickListener() {
-
-                @Override
-                public boolean onLongClick(View view) {
-                    String msg;
-                    if (deviceStateOrTrackingNumber.equals("current")) {
-                        msg = "Are you sure the device cannot be fixed or you want to move it to pending list?";
-                    }
-                    else{
-                        msg = "Are you sure the device cannot be fixed?";
-                    }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(qrCodeActivity);
-
-                    builder.setTitle("Confirm");
-                    builder.setMessage(msg);
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent2 = new Intent();
-                            setResult(1, intent2);
-                            finish();
-                            dialog.dismiss();
-                        }
-                    });
-
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                            // Do nothing
-                            dialog.dismiss();
-                        }
-                    });
-
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                    return true;
-                }
-
-            });
-            qrCodeStr = serviceId + " " + newState;
             relativeParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
             relativeParams.setMargins(width * 25 / 100, height * -7 / 100, 0, 0);
             relativeParams.height = height * 50 / 100;
@@ -150,7 +107,6 @@ public class QRCodeActivity extends AppCompatActivity {
             imageView.setLayoutParams(relativeParams);
         }
         else {
-            qrCodeStr = serviceId + " " + deviceStateOrTrackingNumber;
             btn.setVisibility(View.INVISIBLE);
             editText.setVisibility(View.INVISIBLE);
             relativeParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();

@@ -1,11 +1,8 @@
 package com.mypackage.project;
 
-import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,19 +23,16 @@ import android.widget.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AlertDialogRadio.AlertPositiveListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private List<DevicesToRepairModel> devicesList = new ArrayList<>();
+    public List<DevicesToRepairModel> devicesList = new ArrayList<>();
     private List<DevicesToRepairModel> currentDevices = new ArrayList<>();
-    private List<DevicesToRepairModel> pendingDevices = new ArrayList<>();
-    private List<DevicesToRepairModel> notFixedDevices = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private RecyclerViewTechnicianAdapter technicianAdapter;
     private RecyclerViewCourierAdapter courierAdapter;
     private Menu menu;
-    private int recyclerViewPosition, selectedId;
+    private int selectedId;
     private boolean isCourier = false;
     private MainActivity mainActivity;
     private boolean firstTime = true;
@@ -51,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         mainActivity = this;
         setTitle("Username");
+        // new GetDevicesForRepair(mainActivity).execute();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -67,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             menu.getItem(i).setVisible(false);
         }
         UserModel userModel = new UserModel();
-        userModel.roles = "1";
+        userModel.roles = "2,1";
         String[] parts = userModel.roles.split(",");
         int min = Integer.parseInt(parts[0]);
         if (min == 4) {
@@ -77,11 +72,10 @@ public class MainActivity extends AppCompatActivity
         MenuItem menuItem;
         for (int i = 0; i < parts.length; i++) {
             if (Integer.parseInt(parts[i].trim()) == 4) {
-                menuItem = menu.getItem(0);
-                menu.getItem(0).getSubMenu().getItem(1).setVisible(false);
-                menu.getItem(0).getSubMenu().getItem(2).setVisible(false);
                 isCourier = true;
-            } else {
+                menuItem = menu.getItem(0);
+            }
+            else {
                 menuItem = menu.getItem(Integer.parseInt(parts[i].trim()) - 1);
             }
             if (Integer.parseInt(parts[i].trim()) < min) {
@@ -140,39 +134,24 @@ public class MainActivity extends AppCompatActivity
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                if (selectedId != R.id.nav_notFixed) {
-                    recyclerViewPosition = position;
-                    DevicesToRepairModel devicesToRepairModel = devicesList.get(position);
-                    Intent intent = new Intent(mainActivity, QRCodeActivity.class);
-                    intent.putExtra("serviceId", devicesToRepairModel.serviceId);
-                    if (isCourier)
-                        intent.putExtra("deviceStateOrTrackingNumber", devicesToRepairModel.trackingNumber);
-                    else
-                        intent.putExtra("deviceStateOrTrackingNumber", devicesToRepairModel.state);
-                    String newState;
-                    if (devicesToRepairModel.currentState.equals("state1"))
-                        newState = "state2";
-                    else
-                        newState = "state3";
-                    intent.putExtra("newState", newState);
-                    intent.putExtra("isCourier", isCourier);
-                    startActivityForResult(intent, 1);
-                }
+                DevicesToRepairModel devicesToRepairModel = devicesList.get(position);
+                Intent intent = new Intent(mainActivity, QRCodeActivity.class);
+                intent.putExtra("serviceId", devicesToRepairModel.serviceId);
+                if (!isCourier)
+                    intent.putExtra("nextToAction", devicesToRepairModel.nextToAction);
+                intent.putExtra("isCourier", isCourier);
+                startActivityForResult(intent, 1);
             }
 
             @Override
             public void onLongClick(View view, int position) {
-                if (selectedId != R.id.nav_notFixed && !isCourier) {
-                    recyclerViewPosition = position;
-                    changeDeviceState();
-                }
+
             }
         }));
         menu.getItem(min - 1).setChecked(true);
         selectedId = menu.getItem(min - 1).getItemId();
         if (min == 1) {
-            selectedId = menu.getItem(0).getSubMenu().getItem(0).getItemId();
-            menu.getItem(0).getSubMenu().getItem(0).setChecked(true);
+            selectedId = menu.getItem(0).getItemId();
             devicesToRepair();
         }
     }
@@ -217,26 +196,12 @@ public class MainActivity extends AppCompatActivity
         if (id != selectedId) {
             if (firstTime) {
                 firstTime = false;
-                menu.getItem(0).getSubMenu().getItem(0).setChecked(false);
+                menu.getItem(0).setChecked(false);
             }
             selectedId = id;
             if (id == R.id.nav_current) {
                 devicesList = new ArrayList<>();
                 for (DevicesToRepairModel itemModel : currentDevices) {
-                    devicesList.add(itemModel);
-                }
-                technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                recyclerView.setAdapter(technicianAdapter);
-            } else if (id == R.id.nav_pending) {
-                devicesList = new ArrayList<>();
-                for (DevicesToRepairModel itemModel : pendingDevices) {
-                    devicesList.add(itemModel);
-                }
-                technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                recyclerView.setAdapter(technicianAdapter);
-            } else if (id == R.id.nav_notFixed) {
-                devicesList = new ArrayList<>();
-                for (DevicesToRepairModel itemModel : notFixedDevices) {
                     devicesList.add(itemModel);
                 }
                 technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
@@ -260,28 +225,23 @@ public class MainActivity extends AppCompatActivity
         devicesToRepairModel.serviceId = 1;
         devicesToRepairModel.deliveredToHome = 1;
         devicesToRepairModel.device = "IPhone 7";
-        devicesToRepairModel.currentState = "state1";
-        devicesToRepairModel.state = "current";
+        devicesToRepairModel.trackingNumber = "GB25678890";
+        devicesToRepairModel.address = "Αγίας Φωτεινής 60";
+        devicesToRepairModel.name_surname = "Νίκος Χανταπάκης";
+        devicesToRepairModel.nextToAction = 1;
         devicesToRepairModel.problem = "Δεν λειουργει η οθονη, προβλημα με την καμερα και μερικες φορες κανει επανεκινηησ απο μονμο του";
         devicesToRepairModel.endDate = "10/11/2018";
         list.add(devicesToRepairModel);
 
-        devicesToRepairModel = new DevicesToRepairModel();
-        devicesToRepairModel.serviceId = 2;
-        devicesToRepairModel.device = "LG G1";
-        devicesToRepairModel.state = "current";
-        devicesToRepairModel.deliveredToHome = 1;
-        devicesToRepairModel.currentState = "state3";
-        devicesToRepairModel.problem = "Δεν λειουργει η οθονη, προβλημα με την καμερα και μερικες φορες κανει επανεκινηησ απο μονμο του";
-        devicesToRepairModel.endDate = "20/11/2018";
-        list.add(devicesToRepairModel);
 
         devicesToRepairModel = new DevicesToRepairModel();
         devicesToRepairModel.serviceId = 3;
         devicesToRepairModel.device = "LG G2";
-        devicesToRepairModel.state = "pending";
+        devicesToRepairModel.trackingNumber = "GB25678890";
+        devicesToRepairModel.address = "Αγίας Φωτεινής 60";
+        devicesToRepairModel.name_surname = "Νίκος Χανταπάκης";
         devicesToRepairModel.deliveredToHome = 1;
-        devicesToRepairModel.currentState = "state1";
+        devicesToRepairModel.nextToAction = 1;
         devicesToRepairModel.problem = "Δεν λειουργει η οθονη, προβλημα με την καμερα και μερικες φορες κανει επανεκινηησ απο μονμο του";
         devicesToRepairModel.endDate = "20/11/2018";
         list.add(devicesToRepairModel);
@@ -289,194 +249,52 @@ public class MainActivity extends AppCompatActivity
         devicesToRepairModel = new DevicesToRepairModel();
         devicesToRepairModel.serviceId = 3;
         devicesToRepairModel.device = "LG G3";
-        devicesToRepairModel.state = "current";
         devicesToRepairModel.deliveredToHome = 1;
         devicesToRepairModel.trackingNumber = "GB25678890";
         devicesToRepairModel.address = "Αγίας Φωτεινής 60";
         devicesToRepairModel.name_surname = "Νίκος Χανταπάκης";
-        devicesToRepairModel.currentState = "state2";
-        devicesToRepairModel.problem = "Δεν λειουργει η οθονη, προβλημα με την καμερα και μερικες φορες κανει επανεκινηησ απο μονμο του";
-        devicesToRepairModel.endDate = "20/11/2018";
-        list.add(devicesToRepairModel);
-
-        devicesToRepairModel = new DevicesToRepairModel();
-        devicesToRepairModel.serviceId = 3;
-        devicesToRepairModel.device = "LG G4";
-        devicesToRepairModel.state = "current";
-        devicesToRepairModel.deliveredToHome = 1;
-        devicesToRepairModel.currentState = "state2";
-        devicesToRepairModel.trackingNumber = "GB14566543";
-        devicesToRepairModel.address = "Λεωφ. Αλεξάνδρας 83";
-        devicesToRepairModel.name_surname = "Κωνσταντίνος Μανωλάτος";
+        devicesToRepairModel.nextToAction = 0;
         devicesToRepairModel.problem = "Δεν λειουργει η οθονη, προβλημα με την καμερα και μερικες φορες κανει επανεκινηησ απο μονμο του";
         devicesToRepairModel.endDate = "20/11/2018";
         list.add(devicesToRepairModel);
 
         for (DevicesToRepairModel item : list) {
-            if (!isCourier) {
-                if ((!item.currentState.equals("state2") && item.deliveredToHome == 0) || (!item.currentState.equals("state3") && item.deliveredToHome == 1)) {
-                    if (item.state.equals("current"))
-                        currentDevices.add(item);
-                    else if (item.state.equals("pending"))
-                        pendingDevices.add(item);
-                    else
-                        notFixedDevices.add(item);
-                }
-            } else {
-                if (item.currentState.equals("state2") && item.deliveredToHome == 1) {
-                    currentDevices.add(item);
-                }
-            }
+            currentDevices.add(item);
         }
         devicesList = currentDevices;
         if (isCourier) {
-            menu.getItem(0).getSubMenu().getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
             courierAdapter = new RecyclerViewCourierAdapter(devicesList);
             recyclerView.setAdapter(courierAdapter);
         } else {
-            updateDevicesMenuCounts();
             technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
             recyclerView.setAdapter(technicianAdapter);
         }
+        updateDevicesMenuCounts();
     }
 
     private void updateDevicesMenuCounts() {
-        menu.getItem(0).getSubMenu().getItem(0).setTitle("Current (" + currentDevices.size() + ")");
-        menu.getItem(0).getSubMenu().getItem(1).setTitle("Pending (" + pendingDevices.size() + ")");
-        menu.getItem(0).getSubMenu().getItem(2).setTitle("Not Fixed (" + notFixedDevices.size() + ")");
-    }
-
-    private void changeDeviceState() {
-        if (selectedId == R.id.nav_current) {
-            FragmentManager manager = getFragmentManager();
-            AlertDialogRadio alert = new AlertDialogRadio();
-            Bundle b = new Bundle();
-            b.putInt("position", 0);
-            alert.setArguments(b);
-            alert.show(manager, "alert_dialog_radio");
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-
-            builder.setTitle("Confirm");
-            builder.setMessage("Are you sure the device cannot be fixed?");
-            builder.setCancelable(false);
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    DevicesToRepairModel devicesToRepairModel = devicesList.get(recyclerViewPosition);
-                    devicesToRepairModel.state = "not fixed";
-                    notFixedDevices.add(devicesToRepairModel);
-                    pendingDevices.remove(recyclerViewPosition);
-                    devicesList = new ArrayList<>();
-                    for (DevicesToRepairModel itemModel : pendingDevices) {
-                        devicesList.add(itemModel);
-                    }
-                    updateDevicesMenuCounts();
-                    technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                    recyclerView.setAdapter(technicianAdapter);
-                    dialog.dismiss();
-                }
-            });
-
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    // Do nothing
-                    dialog.dismiss();
-                }
-            });
-
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
+        menu.getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             long serviceId = data.getLongExtra("serviceId", -1);
-            if (serviceId == -1) {
-                if (selectedId == R.id.nav_pending) {
-                    DevicesToRepairModel devicesToRepairModel = devicesList.get(recyclerViewPosition);
-                    devicesToRepairModel.state = "not fixed";
-                    notFixedDevices.add(devicesToRepairModel);
-                    pendingDevices.remove(recyclerViewPosition);
-                    devicesList = new ArrayList<>();
-                    for (DevicesToRepairModel itemModel : pendingDevices) {
-                        devicesList.add(itemModel);
-                    }
-                    updateDevicesMenuCounts();
-                    technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                    recyclerView.setAdapter(technicianAdapter);
-                } else {
-                    changeDeviceState();
-                }
-            } else {
-                for (DevicesToRepairModel item : devicesList) {
-                    if (item.serviceId == serviceId) {
-                        devicesList.remove(item);
-                        if (selectedId == R.id.nav_current) {
-                            currentDevices.remove(item);
-                        } else {
-                            pendingDevices.remove(item);
-                        }
+            for (DevicesToRepairModel item : devicesList) {
+                if (item.serviceId == serviceId) {
+                    devicesList.remove(item);
+                    if (selectedId == R.id.nav_current) {
+                        currentDevices.remove(item);
                         break;
                     }
                 }
-                if (isCourier) {
-                    courierAdapter.notifyDataSetChanged();
-                    menu.getItem(0).getSubMenu().getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
-                } else {
-                    technicianAdapter.notifyDataSetChanged();
-                    updateDevicesMenuCounts();
-                }
             }
+            if (isCourier) {
+                courierAdapter.notifyDataSetChanged();
+            } else {
+                technicianAdapter.notifyDataSetChanged();
+            }
+            updateDevicesMenuCounts();
         }
-    }
-
-    @Override
-    public void onPositiveClick(final int position) {
-        final int pos = position;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure?");
-        builder.setCancelable(false);
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int which) {
-                DevicesToRepairModel devicesToRepairModel = devicesList.get(recyclerViewPosition);
-                if (pos == 0) {
-                    devicesToRepairModel.state = "pending";
-                    pendingDevices.add(devicesToRepairModel);
-                } else {
-                    devicesToRepairModel.state = "not fixed";
-                    notFixedDevices.add(devicesToRepairModel);
-                }
-                currentDevices.remove(recyclerViewPosition);
-                devicesList = new ArrayList<>();
-                for (DevicesToRepairModel itemModel : currentDevices) {
-                    devicesList.add(itemModel);
-                }
-                updateDevicesMenuCounts();
-                technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                recyclerView.setAdapter(technicianAdapter);
-            }
-        });
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                // Do nothing
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 }
