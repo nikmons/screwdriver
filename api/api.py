@@ -8,8 +8,10 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
 
+import os
+
 app = Flask(__name__, static_url_path="")
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:root@localhost:5432/store_test'
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
 
 api = Api(app)
 auth = HTTPBasicAuth()
