@@ -1,17 +1,31 @@
-#!flask/bin/python
-
-"""Alternative version of the ToDo RESTful server implemented using the
-Flask-RESTful extension."""
-
+#!api/api.py
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
+from flasgger import Swagger, swag_from
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+
+import os
+
+load_dotenv(verbose=True)
 
 app = Flask(__name__, static_url_path="")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["ENVIRONMENT"] = os.getenv("ENV")
+app.config["CSRF_ENABLED"] = True
+
+#print(os.getenv("ENV"))
+#print(os.getenv("DATABASE_URL"))
+
+swagger_template = {'securityDefinitions': { 'basicAuth': { 'type': 'basic' } }}
+
+swagger = Swagger(app, template=swagger_template)
 api = Api(app)
 auth = HTTPBasicAuth()
-
-# Test comment
+db =  SQLAlchemy(app)
+import models
 
 @auth.get_password
 def get_password(username):
@@ -26,6 +40,7 @@ def unauthorized():
     # auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
+"""Task Array"""
 tasks = [
     {
         'id': 1,
@@ -48,6 +63,36 @@ task_fields = {
     'uri': fields.Url('task')
 }
 
+employee_fields = {
+    'Emp_id': fields.Integer,
+    'Emp_Created': fields.DateTime,
+    'Emp_First_Name': fields.String,
+    'Emp_Last_Name': fields.String,
+    'Emp_Address_Name': fields.String,
+    'Emp_Address_Num': fields.Integer,
+    'Emp_Email': fields.String,
+    'Emp_Contact_Num': fields.Integer,
+    'Emp_Contact_Num2': fields.Integer,
+    'Emp_Username': fields.String,
+    'Emp_Password': fields.String
+}
+
+class EmployeeListAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        super(EmployeeListAPI, self).__init__()
+
+    def get(self):
+        """
+        file: apidocs/employees_get.yml
+        """
+        employees = models.Employees.query.all() #Query database
+        print(employees)
+        return {'employees': [marshal(employee, employee_fields) for employee in employees]}
+
+    def post(self):
+        print(1)
 
 class TaskListAPI(Resource):
     decorators = [auth.login_required]
@@ -62,6 +107,9 @@ class TaskListAPI(Resource):
         super(TaskListAPI, self).__init__()
 
     def get(self):
+        """
+        file: apidocs/tasks_get.yml
+        """
         return {'tasks': [marshal(task, task_fields) for task in tasks]}
 
     def post(self):
@@ -87,6 +135,9 @@ class TaskAPI(Resource):
         super(TaskAPI, self).__init__()
 
     def get(self, id):
+        """
+        file: apidocs/task_get.yml
+        """
         task = [task for task in tasks if task['id'] == id]
         if len(task) == 0:
             abort(404)
@@ -110,7 +161,7 @@ class TaskAPI(Resource):
         tasks.remove(task[0])
         return {'result': True}
 
-
+api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
 api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
 

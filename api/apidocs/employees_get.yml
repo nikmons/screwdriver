@@ -1,0 +1,12 @@
+Endpoint returning a list of employees
+---
+tags:
+  - Employees
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+responses:
+  200:
+    description: A list of Employees

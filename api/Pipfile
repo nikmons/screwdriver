@@ -9,6 +9,12 @@ flask = "*"
 flask-restful = "*"
 flask-httpauth = "*"
 gunicorn = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+flask-script = "*"
+"psycopg2" = "*"
+python-dotenv = "*"
+flasgger = "*"
 
 [dev-packages]
 
