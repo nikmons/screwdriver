@@ -1,17 +1,21 @@
-#!flask/bin/python
-
-"""Alternative version of the ToDo RESTful server implemented using the
-Flask-RESTful extension."""
-
+#!api/api.py
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 
 import os
 
+load_dotenv(verbose=True)
+
 app = Flask(__name__, static_url_path="")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["ENVIRONMENT"] = os.getenv("ENV")
+
+#print(os.getenv("ENV"))
+#print(os.getenv("DATABASE_URL"))
 
 api = Api(app)
 auth = HTTPBasicAuth()
