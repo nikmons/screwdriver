@@ -70,3 +70,29 @@ To start a local development server of flask use the following command (always i
 ```shell
 pipenv run flask run
 ```
+
+## migrations
+
+As stated previously, migrations are managed and executed using **alembic**. Any changes to **models** script\
+should also be applied to the **local** instance of postgresql database by creating and executing the migration
+script locally.
+
+**Migration on the remote db is performed automatically as long as the new migration script has been commited**
+
+The following 3 commands are use to initialize,create and run migration scripts against the db.
+
+```shell
+pipenv run manage.py db init #Initialize db, create migration dir
+
+pipenv run manage.py db migrate #Create a new migration script with applied changes
+
+pipenv run manage.py db upgrade #Upgrade target db using migration script (or downgrade)
+```
+
+# Client
+
+[TODO]
+
+# Tracker
+
+[TODO]
