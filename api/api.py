@@ -1,27 +1,19 @@
-#!api/api.py
+#!flask/bin/python
+
+"""Alternative version of the ToDo RESTful server implemented using the
+Flask-RESTful extension."""
+
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
-from flasgger import Swagger, swag_from
 from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
+from datetime import datetime
 
 import os
 
-load_dotenv(verbose=True)
-
 app = Flask(__name__, static_url_path="")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["ENVIRONMENT"] = os.getenv("ENV")
-app.config["CSRF_ENABLED"] = True
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
 
-#print(os.getenv("ENV"))
-#print(os.getenv("DATABASE_URL"))
-
-swagger_template = {'securityDefinitions': { 'basicAuth': { 'type': 'basic' } }}
-
-swagger = Swagger(app, template=swagger_template)
 api = Api(app)
 auth = HTTPBasicAuth()
 db =  SQLAlchemy(app)
@@ -63,66 +55,56 @@ task_fields = {
     'uri': fields.Url('task')
 }
 
-employee_fields = {
-    'Emp_id': fields.Integer,
-    'Emp_Created': fields.DateTime,
-    'Emp_First_Name': fields.String,
-    'Emp_Last_Name': fields.String,
-    'Emp_Address_Name': fields.String,
-    'Emp_Address_Num': fields.Integer,
-    'Emp_Email': fields.String,
-    'Emp_Contact_Num': fields.Integer,
-    'Emp_Contact_Num2': fields.Integer,
-    'Emp_Username': fields.String,
-    'Emp_Password': fields.String
-}
 
-class EmployeeListAPI(Resource):
-    decorators = [auth.login_required]
-
-    def __init__(self):
-        super(EmployeeListAPI, self).__init__()
-
-    def get(self):
-        """
-        file: apidocs/employees_get.yml
-        """
-        employees = models.Employees.query.all() #Query database
-        print(employees)
-        return {'employees': [marshal(employee, employee_fields) for employee in employees]}
-
-    def post(self):
-        print(1)
-
-class TaskListAPI(Resource):
+class Employees(Resource):
     decorators = [auth.login_required]
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str, required=True,
-                                   help='No task title provided',
+        self.reqparse.add_argument('emp_created', type=date(), required=True, help='No task title provided',
                                    location='json')
-        self.reqparse.add_argument('description', type=str, default="",
+        self.reqparse.add_argument('emp_first_name', type=str, required=True, help='No first_name provided',
                                    location='json')
-        super(TaskListAPI, self).__init__()
+        self.reqparse.add_argument('emp_last_name', type=str, required=True, help='No last_name provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_address_name', type=str, required=True, help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_address_num', type=int, required=True, help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_email', type=str, required=True, help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_contact_num', type=int, required=True, help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_contact_num2', type=int, required=True, help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_username', type=str, required=True, help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('emp_password', type=str, required=True, help='No task title provided',
+                                   location='json')
+        super(Employees, self).__init__()
 
     def get(self):
-        """
-        file: apidocs/tasks_get.yml
-        """
         return {'tasks': [marshal(task, task_fields) for task in tasks]}
 
     def post(self):
         args = self.reqparse.parse_args()
-        task = {
-            'id': tasks[-1]['id'] + 1,
-            'title': args['title'],
-            'description': args['description'],
-            'done': False
+        emp = {
+            'Emp_Created': args['emp_created'],
+            'Emp_First_Name': args['emp_first_name'],
+            'Emp_Last_Name': args['last_name'],
+            'Emp_Address_Name': args['address_name'],
+            'Emp_Address_Num': args['address_num'],
+            'Emp_Email': args['emp_email'],
+            'Emp_Contact_Num': args['emp_contact_num'],
+            'Emp_Contact_Num2': args['emp_contact_num2'],
+            'Emp_Username': args['emp_username'],
+            'Emp_Password': args['emp_password']
         }
-        tasks.append(task)
-        return {'task': marshal(task, task_fields)}, 201
-
+        try:
+            db.session.add(emp)
+            return "done"
+        except:
+            return "Not done"
 
 class TaskAPI(Resource):
     decorators = [auth.login_required]
@@ -135,9 +117,6 @@ class TaskAPI(Resource):
         super(TaskAPI, self).__init__()
 
     def get(self, id):
-        """
-        file: apidocs/task_get.yml
-        """
         task = [task for task in tasks if task['id'] == id]
         if len(task) == 0:
             abort(404)
@@ -161,8 +140,8 @@ class TaskAPI(Resource):
         tasks.remove(task[0])
         return {'result': True}
 
-api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
-api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
+
+api.add_resource(Employee, '/api/employee', endpoint='Employee')
 api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
 
 
