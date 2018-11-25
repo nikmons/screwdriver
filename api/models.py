@@ -2,7 +2,7 @@ from api import db
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, ForeignKey, String, Date, DateTime, Boolean
+from sqlalchemy import Table, Column, Integer, ForeignKey, String, Date, Boolean
 
 #__________________________B  L  U  E________________________________>
 
@@ -24,7 +24,7 @@ class Roles(db.Model):
 class Employees(db.Model):
     __tablename__ = 'Employees'
     Emp_id = Column(Integer, primary_key = True)
-    Emp_Created = Column(DateTime)
+    Emp_Created = Column(Date)
     Emp_First_Name = Column(String)
     Emp_Last_Name = Column(String)
     Emp_Address_Name = Column(String)
@@ -68,7 +68,7 @@ class Devices (db.Model):
 class Customers (db.Model):
     __tablename__ = 'Customers'
     Cust_id = Column(Integer, primary_key = True)
-    Cust_Created = Column(DateTime)
+    Cust_Created = Column(Date)
     Cust_First_Name = Column(String)
     Cust_Last_Name = Column(String)
     Cust_Address_Name = Column(String) #Also Cust_Address_Num (nomizw einai to idio me na to grapsoume sto address name)
@@ -77,7 +77,7 @@ class Customers (db.Model):
     Cust_Contact_Num = Column(String)
     Cust_Birth_Date = Column(Date)
     child_Issues = relationship('Issues') #6
-    
+
 
 #______________________G  R  E  E  N__________________________________>
 
@@ -144,29 +144,3 @@ class Issues (db.Model):
      Issue_Created = Column(Date)
      Issue_Closed = Column(Date)
 #______________________R  E  D________________________________________>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
