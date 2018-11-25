@@ -1,0 +1,12 @@
+Endpoint returning a list of tasks
+---
+tags:
+  - Tasks
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+responses:
+  200:
+    description: A list of Tasks
