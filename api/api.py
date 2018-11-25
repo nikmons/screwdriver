@@ -63,6 +63,37 @@ task_fields = {
     'uri': fields.Url('task')
 }
 
+employee_fields = {
+    'Emp_id': fields.Integer,
+    'Emp_Created': fields.DateTime,
+    'Emp_First_Name': fields.String,
+    'Emp_Last_Name': fields.String,
+    'Emp_Address_Name': fields.String,
+    'Emp_Address_Num': fields.Integer,
+    'Emp_Email': fields.String,
+    'Emp_Contact_Num': fields.Integer,
+    'Emp_Contact_Num2': fields.Integer,
+    'Emp_Username': fields.String,
+    'Emp_Password': fields.String
+}
+
+class EmployeeListAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        super(EmployeeListAPI, self).__init__()
+
+    def get(self):
+        """
+        file: apidocs/employees_get.yml
+        """
+        employees = models.Employees.query.all() #Query database
+        print(employees)
+        return {'employees': [marshal(employee, employee_fields) for employee in employees]}
+
+    def post(self):
+        print(1)
+
 class TaskListAPI(Resource):
     decorators = [auth.login_required]
 
@@ -130,6 +161,7 @@ class TaskAPI(Resource):
         tasks.remove(task[0])
         return {'result': True}
 
+api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
 api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
 
