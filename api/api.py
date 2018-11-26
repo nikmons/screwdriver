@@ -125,6 +125,25 @@ class EmployeeListAPI(Resource):
         db.session.add(employee)
         db.session.commit()
 
+class EmployeeAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        super(EmployeeAPI, self).__init__()
+
+    def delete(self, id):
+        """
+        file: apidocs/employee_delete.yml
+        """
+        print("Delete id = {}".format(id))
+        employee = models.Employees.query.get(id)       
+        print(employee) 
+        if employee is None:
+            abort(404)
+        db.session.delete(employee)
+        db.session.commit()
+        return {'result': True}
+
 class TaskListAPI(Resource):
     decorators = [auth.login_required]
 
@@ -193,6 +212,7 @@ class TaskAPI(Resource):
         return {'result': True}
 
 api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
+api.add_resource(EmployeeAPI, '/todo/api/v1.0/employees/<int:id>', endpoint='employee')
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
 api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
 

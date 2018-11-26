@@ -1,0 +1,18 @@
+Endpoint to delete an Employee
+---
+tags:
+  - Employee
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the employee to delete
+responses:
+  200:
+    description: Deleted ID
