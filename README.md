@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.com/NickMns/screwdriver.svg?branch=master)](https://travis-ci.com/NickMns/screwdriver)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![GitHub contributors](https://img.shields.io/github/contributors/Naereen/StrapDown.js.svg)](https://github.com/NickMns/screwdriver/graphs/contributors/)
 
 # screwdriver
 Manage/Monitor IT hardware servicing lifecycle
