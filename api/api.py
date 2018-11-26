@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 
 import os
+import datetime
 
 load_dotenv(verbose=True)
 
@@ -81,6 +82,25 @@ class EmployeeListAPI(Resource):
     decorators = [auth.login_required]
 
     def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('Emp_First_Name', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Emp_Last_Name', type=str, default="",
+                                    location='json')
+        self.reqparse.add_argument('Emp_Address_Name', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Emp_Address_Num', type=int, default=0,
+                                   location='json')
+        self.reqparse.add_argument('Emp_Email', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Emp_Contact_Num', type=int, default=0,
+                                   location='json')
+        self.reqparse.add_argument('Emp_Contact_Num2', type=str, default=0,
+                                   location='json')     
+        self.reqparse.add_argument('Emp_Username', type=str, default="",
+                                   location='json')     
+        self.reqparse.add_argument('Emp_Password', type=str, default="",
+                                   location='json')
         super(EmployeeListAPI, self).__init__()
 
     def get(self):
@@ -92,7 +112,18 @@ class EmployeeListAPI(Resource):
         return {'employees': [marshal(employee, employee_fields) for employee in employees]}
 
     def post(self):
-        print(1)
+        """
+        file: apidocs/employees_post.yml
+        """
+        args = self.reqparse.parse_args()
+        print(args)
+        employee = models.Employees(Emp_Created=None,Emp_First_Name=args["Emp_First_Name"],
+                                    Emp_Last_Name=args["Emp_Last_Name"], Emp_Address_Name=args["Emp_Address_Name"],
+                                    Emp_Address_Num=args["Emp_Address_Num"], Emp_Email=args["Emp_Email"],
+                                    Emp_Contact_Num=args["Emp_Contact_Num"], Emp_Contact_Num2=args["Emp_Contact_Num2"],
+                                    Emp_Username=args["Emp_Username"], Emp_Password=args["Emp_Password"])
+        db.session.add(employee)
+        db.session.commit()
 
 class TaskListAPI(Resource):
     decorators = [auth.login_required]
