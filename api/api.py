@@ -1,5 +1,5 @@
 #!api/api.py
-from flask import Flask, jsonify, abort, make_response
+from flask import Flask, jsonify, abort, make_response,session
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
 from flasgger import Swagger, swag_from
@@ -11,6 +11,7 @@ import os
 load_dotenv(verbose=True)
 
 app = Flask(__name__, static_url_path="")
+app.secret_key = "prepei na broume kati gi auto edw to kleidi"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["ENVIRONMENT"] = os.getenv("ENV")
@@ -160,6 +161,29 @@ class TaskAPI(Resource):
             abort(404)
         tasks.remove(task[0])
         return {'result': True}
+
+class LoginAPI(Resource):
+    decorators = [auth.login_required]
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('username', required = True, type=str, location='json')
+        self.reqparse.add_argument('password', required = True, type=str, location='json')
+        super(TaskAPI, self).__init__()
+
+
+    def post(self):
+        args = self.reqparse.parse_args()
+        newUser = models.Employees.query.filter_by(Emp_Username = args['username']).first()
+        if newUser:
+            if newUser.Emp_Password == args['password']:
+                session['Users'] = args['username']
+            else:
+                return "denied"
+        else:
+            return "not found"
+
+
+api.add_resource(LoginAPI, '/todo/api/v1.0/login', endpoint='login')
 
 api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
