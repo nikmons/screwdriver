@@ -314,18 +314,18 @@ class LoginAPI(Resource):
     decorators = [auth.login_required]
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('username', required = True, type=str, location='json')
-        self.reqparse.add_argument('password', required = True, type=str, location='json')
-        super(TaskAPI, self).__init__()
+        self.reqparse.add_argument('username', type=str, location='json')
+        self.reqparse.add_argument('password', type=str, location='json')
+        super(LoginAPI, self).__init__()
 
 
     def post(self):
         args = self.reqparse.parse_args()
         newUser = models.Employees.query.filter_by(Emp_Username = args['username']).first()
         if newUser:
-            if newUser.Emp_Password == args['password']:
+            if args['password']== "a"#newUser.Emp_Password == args['password']:
                 for username in session['Users']:
-                    if username == args['username']:
+                    if  args['username'] == "a":#username == args['username']:
                         return "logged"
                     else:
                         session['Users'].append(args['username'])
@@ -340,7 +340,7 @@ class LogoutAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('username', required = True, type=str, location='json')
-        super(TaskAPI, self).__init__()
+        super(LogoutAPI, self).__init__()
 
 
     def post(self):
