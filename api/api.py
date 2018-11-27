@@ -78,6 +78,75 @@ employee_fields = {
     'Emp_Password': fields.String
 }
 
+devices_fields = {
+    'Dev_id': fields.Integer,
+    'Dev_Creator': fields.DateTime,
+    'Dev_Manufacturer': fields.String,
+    'Dev_Mode': fields.String,
+    'Dev_Model_Year': fields.DateTime,
+    'Dev_Identifier_Code': fields.String,
+}
+
+class DeviceListAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('Dev_Creator', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Dev_Manufacturer', type=str, default="",
+                                    location='json')
+        self.reqparse.add_argument('Dev_Mode', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Dev_Model_Year', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Dev_Identifier_Code', type=int, default=0,
+                                   location='json')
+
+        super(DeviceListAPI, self).__init__()
+
+    def get(self):
+        """
+        file: apidocs/employees_get.yml !!!NOT DONE!!!
+        """
+        devices = models.Devices.query.all() #Query database
+        print(devices)
+        return {'Devices': [marshal(device, devices_fields) for device in devices]}
+
+    def post(self):
+        """
+        file: apidocs/employees_post.yml !!!NOT DONE!!!
+        """
+
+        #Mipws prepei na checkaroume ti mas erxetai?
+
+        args = self.reqparse.parse_args()
+        print(args)
+        device = models.Devices(Dev_Creator=args["Dev_Creator"],Dev_Manufacturer=args["Dev_Manufacturer"],
+                                    Dev_Model=args["Dev_Model"], Dev_Model_Year=args["Dev_Model_Year"],
+                                    Dev_Identifier_Code=args["Dev_Identifier_Code"])
+        db.session.add(device)
+db.session.commit()
+
+class DeviceAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        super(DeviceAPI, self).__init__()
+
+    def delete(self, id):
+        """
+        file: apidocs/employee_delete.yml
+        """
+        print("Delete id = {}".format(id))
+        device = models.Devices.query.get(id)
+        print(device)
+        if device is None:
+            abort(404)
+        db.session.delete(device)
+        db.session.commit()
+        return {'result': True}
+
 class EmployeeListAPI(Resource):
     decorators = [auth.login_required]
 
@@ -205,6 +274,9 @@ class LogoutAPI(Resource):
 
 api.add_resource(LoginAPI, '/todo/api/v1.0/login', endpoint='login')
 api.add_resource(LogoutAPI, '/todo/api/v1.0/logout', endpoint='logout')
+
+api.add_resource(DeviceListAPI, '/todo/api/v1.0/devices', endpoint='devices')
+api.add_resource(DeviceAPI, '/todo/api/v1.0/devices/<int:id>', endpoint='device')
 
 api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
