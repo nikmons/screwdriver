@@ -27,9 +27,9 @@ flask_api = Api(app)
 auth = HTTPBasicAuth()
 db =  SQLAlchemy(app)
 
-from api.resources.employee_list import EmployeeListAPI
-from api.resources.employee import EmployeeAPI
-import api.models
+from resources.employee_list import EmployeeListAPI
+from resources.employee import EmployeeAPI
+import models
 
 @auth.get_password
 def get_password(username):
