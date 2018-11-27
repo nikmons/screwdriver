@@ -145,7 +145,7 @@ class CustomerListAPI(Resource):
                                     Cust_Email=args["Cust_Email"], Cust_Contact_Num=args["Cust_Contact_Num"],
                                     Cust_Contact_Num_2=args["Cust_Contact_Num_2"], Cust_Birth_Date=args["Cust_Birth_Date"])
         db.session.add(customer)
-db.session.commit()
+        db.session.commit()
 
 class CustomerAPI(Resource):
     decorators = [auth.login_required]
