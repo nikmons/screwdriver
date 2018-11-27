@@ -176,14 +176,33 @@ class LoginAPI(Resource):
         newUser = models.Employees.query.filter_by(Emp_Username = args['username']).first()
         if newUser:
             if newUser.Emp_Password == args['password']:
-                session['Users'] = args['username']
+                if username == args['username'] for username in session['Users']:
+                    return "logged"
+                else:
+                    session['Users'].append(args['username'])
             else:
                 return "denied"
         else:
             return "not found"
 
+class LogoutAPI(Resource):
+    decorators = [auth.login_required]
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('username', required = True, type=str, location='json')
+        super(TaskAPI, self).__init__()
+
+
+    def post(self):
+        args = self.reqparse.parse_args()
+        for username in session['Users']:
+            if username == args['username']:
+                session.pop(args['username'], None)
+                return "logged out"
+        return "cant log out"
 
 api.add_resource(LoginAPI, '/todo/api/v1.0/login', endpoint='login')
+api.add_resource(LogoutAPI, '/todo/api/v1.0/logout', endpoint='logout')
 
 api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
