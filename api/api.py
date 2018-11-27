@@ -354,6 +354,9 @@ class LogoutAPI(Resource):
 api.add_resource(LoginAPI, '/todo/api/v1.0/login', endpoint='login')
 api.add_resource(LogoutAPI, '/todo/api/v1.0/logout', endpoint='logout')
 
+api.add_resource(DeviceListAPI, '/todo/api/v1.0/customers', endpoint='customers')
+api.add_resource(DeviceAPI, '/todo/api/v1.0/customers/<int:id>', endpoint='customer')
+
 api.add_resource(DeviceListAPI, '/todo/api/v1.0/devices', endpoint='devices')
 api.add_resource(DeviceAPI, '/todo/api/v1.0/devices/<int:id>', endpoint='device')
 
