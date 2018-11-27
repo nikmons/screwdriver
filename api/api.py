@@ -11,12 +11,12 @@ import os
 load_dotenv(verbose=True)
 
 app = Flask(__name__, static_url_path="")
-app.secret_key = "prepei na broume kati gi auto edw to kleidi"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["ENVIRONMENT"] = os.getenv("ENV")
 app.config["CSRF_ENABLED"] = True
-
+app.secret_key = "prepei na broume kati gi auto edw to kleidi"
 #print(os.getenv("ENV"))
 #print(os.getenv("DATABASE_URL"))
 
