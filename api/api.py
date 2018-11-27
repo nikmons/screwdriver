@@ -1,5 +1,5 @@
 #!api/api.py
-from flask import Flask, jsonify, abort, make_response,session
+from flask import Flask, jsonify, abort, make_response, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
 from flasgger import Swagger, swag_from
@@ -176,10 +176,12 @@ class LoginAPI(Resource):
         newUser = models.Employees.query.filter_by(Emp_Username = args['username']).first()
         if newUser:
             if newUser.Emp_Password == args['password']:
-                if username == args['username'] for username in session['Users']:
-                    return "logged"
-                else:
-                    session['Users'].append(args['username'])
+                for username in session['Users']:
+                    if username == args['username']:
+                        return "logged"
+                    else:
+                        session['Users'].append(args['username'])
+                        return "just logged"
             else:
                 return "denied"
         else:
