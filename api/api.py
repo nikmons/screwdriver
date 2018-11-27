@@ -87,6 +87,85 @@ devices_fields = {
     'Dev_Identifier_Code': fields.String,
 }
 
+devices_fields = {
+    'Cust_id': fields.Integer,
+    'Cust_Created': fields.DateTime,
+    'Cust_First_Name': fields.String,
+    'Cust_Last_Name': fields.String,
+    'Cust_Address_Name': fields.String,
+    'Cust_Email': fields.String,
+    'Cust_Contact_Num': fields.String,
+    'Cust_Contact_Num_2': fields.String,
+    'Cust_Birth_Date': fields.DateTime,
+}
+
+class CustomerListAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('Cust_Created', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Cust_First_Name', type=str, default="",
+                                    location='json')
+        self.reqparse.add_argument('Cust_Last_Name', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Cust_Address_Name', type=str, default="",
+                                   location='json')
+        self.reqparse.add_argument('Cust_Email', type=int, default=0,
+                                   location='json')
+        self.reqparse.add_argument('Cust_Contact_Num', type=int, default=0,
+                                   location='json')
+        self.reqparse.add_argument('Cust_Contact_Num_2', type=int, default=0,
+                                   location='json')
+        self.reqparse.add_argument('Cust_Birth_Date', type=int, default=0,
+                                   location='json')
+
+        super(DeviceListAPI, self).__init__()
+
+    def get(self):
+        """
+        file: apidocs/employees_get.yml !!!NOT DONE!!!
+        """
+        customers = models.Customers.query.all() #Query database
+        print(customers)
+        return {'Customers': [marshal(customer, customer_fields) for customer in customers]}
+
+    def post(self):
+        """
+        file: apidocs/employees_post.yml !!!NOT DONE!!!
+        """
+
+        #Mipws prepei na checkaroume ti mas erxetai?
+
+        args = self.reqparse.parse_args()
+        print(args)
+        customer = models.Devices(Cust_Created=args["Cust_Created"],Cust_First_Name=args["Cust_First_Name"],
+                                    Cust_Last_Name=args["Cust_Last_Name"], Cust_Address_Name=args["Cust_Address_Name"],
+                                    Cust_Email=args["Cust_Email"], Cust_Contact_Num=args["Cust_Contact_Num"],
+                                    Cust_Contact_Num_2=args["Cust_Contact_Num_2"], Cust_Birth_Date=args["Cust_Birth_Date"])
+        db.session.add(customer)
+db.session.commit()
+
+class CustomerAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        super(CustomerAPI, self).__init__()
+
+    def delete(self, id):
+        """
+        file: apidocs/employee_delete.yml
+        """
+        print("Delete id = {}".format(id))
+        customer = models.Customers.query.get(id)
+        print(customer)
+        if customer is None:
+            abort(404)
+        db.session.delete(customer)
+        db.session.commit()
+        return {'result': True}
+
 class DeviceListAPI(Resource):
     decorators = [auth.login_required]
 

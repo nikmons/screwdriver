@@ -74,10 +74,10 @@ class Customers (db.Model):
     Cust_Address_Name = Column(String) #Also Cust_Address_Num (nomizw einai to idio me na to grapsoume sto address name)
     Cust_Email = Column(String) #Den kserw pws leme oti mporei na einai null
     Cust_Contact_Num = Column(String) #tha elega string afou den xreiazetai na kanoume praxeis me to noumero
-    Cust_Contact_Num = Column(String)
+    Cust_Contact_Num_2 = Column(String)
     Cust_Birth_Date = Column(Date)
     child_Issues = relationship('Issues') #6
-    
+
 
 #______________________G  R  E  E  N__________________________________>
 
@@ -144,29 +144,3 @@ class Issues (db.Model):
      Issue_Created = Column(Date)
      Issue_Closed = Column(Date)
 #______________________R  E  D________________________________________>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
