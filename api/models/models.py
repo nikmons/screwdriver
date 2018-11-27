@@ -1,4 +1,4 @@
-from api import db
+from api.app import db
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
