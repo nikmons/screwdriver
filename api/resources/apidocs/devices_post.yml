@@ -1,0 +1,31 @@
+Endpoint to add Devices
+---
+tags:
+  - Devices
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Device object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/Device"
+responses:
+  200:
+    description: A list of Devices
+definitions:
+  Device:
+    type: "object"
+    properties:
+      Dev_Manufacturer:
+        type: "string"
+      Dev_Model:
+        type: "string"
+      Dev_Model_Year:
+        type: "string"
+      Dev_Identifier_Code:
+        type: "string"

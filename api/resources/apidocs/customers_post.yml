@@ -1,0 +1,39 @@
+Endpoint to add Customers
+---
+tags:
+  - Customers
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Customer object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/Customer"
+responses:
+  200:
+    description: A list of Customers
+definitions:
+  Customer:
+    type: "object"
+    required:
+    - "Cust_First_Name"
+    properties:
+      Cust_First_Name:
+        type: "string"
+      Cust_Last_Name:
+        type: "string"
+      Cust_Address_Name:
+        type: "string"
+      Cust_Email:
+        type: "integer"
+      Cust_Contact_Num:
+        type: "string"
+      Cust_Contact_Num_2:
+        type: "integer"
+      Cust_Birth_Date:
+        type: "integer"

@@ -2,7 +2,7 @@ import os
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
-from api import app, api, db
+from app import app, flask_api, db
 
 app.config.from_object(os.environ['APP_SETTINGS'])
 

@@ -1,0 +1,43 @@
+Endpoint to add Employees
+---
+tags:
+  - Employees
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Employee object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/Employee"
+responses:
+  200:
+    description: A list of Employees
+definitions:
+  Employee:
+    type: "object"
+    required:
+    - "Emp_FirstName"
+    properties:
+      Emp_First_Name:
+        type: "string"
+      Emp_Last_Name:
+        type: "string"
+      Emp_Address_Name:
+        type: "string"
+      Emp_Address_Num:
+        type: "integer"
+      Emp_Email:
+        type: "string"
+      Emp_Contact_Num:
+        type: "integer"
+      Emp_Contact_Num2:
+        type: "integer"
+      Emp_Username:
+        type: "string"
+      Emp_Password:
+        type: "string"
