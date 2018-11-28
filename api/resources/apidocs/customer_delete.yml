@@ -1,7 +1,7 @@
-Endpoint to delete an Employee
+Endpoint to delete a Customer
 ---
 tags:
-  - Employees
+  - Customers
 securityDefinitions:
   basicAuth:
     type: basic
@@ -12,7 +12,7 @@ parameters:
     in: path
     type: integer
     required: true
-    description: The id of the employee to delete
+    description: The id of the customer to delete
 responses:
   200:
     description: Deleted ID

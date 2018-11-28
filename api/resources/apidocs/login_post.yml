@@ -1,0 +1,27 @@
+Endpoint to Login
+---
+tags:
+  - User
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Request to Login"
+    required: true
+    schema:
+      $ref: "#/definitions/Login"
+responses:
+  200:
+    description: Login Succesfull
+definitions:
+  Login:
+    type: "object"
+    properties:
+      Username:
+        type: "string"
+      Password:
+        type: "string"

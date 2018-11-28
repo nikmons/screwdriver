@@ -1,7 +1,7 @@
-Endpoint returning a list of tasks
+Endpoint returning a list of devices
 ---
 tags:
-  - Tasks
+  - Devices
 securityDefinitions:
   basicAuth:
     type: basic
@@ -9,4 +9,4 @@ security:
   - basicAuth: []
 responses:
   200:
-    description: A list of Tasks
+    description: A list of Devices
