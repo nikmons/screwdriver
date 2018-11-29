@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, make_response
+from flask import Flask, jsonify, abort, make_response, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
 
 from app import auth, db
