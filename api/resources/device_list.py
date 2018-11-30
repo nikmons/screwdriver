@@ -22,7 +22,7 @@ class DeviceListAPI(Resource):
                                    location='json')
         self.reqparse.add_argument('Dev_Manufacturer', type=str, default="",
                                     location='json')
-        self.reqparse.add_argument('Dev_Mode', type=str, default="",
+        self.reqparse.add_argument('Dev_Model', type=str, default="",
                                    location='json')
         self.reqparse.add_argument('Dev_Model_Year', type=str, default="",
                                    location='json')
