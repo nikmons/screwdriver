@@ -18,12 +18,12 @@ class LoginAPI(Resource):
         """
 
         args = self.reqparse.parse_args()
-        newUser = models.Employees.query.filter_by(Emp_Username = args['username']).first()
+        newUser = models.Employees.query.filter_by(Emp_Username = str(args['username'])).first()
         print(args)
         if newUser:
-            if newUser.Emp_Password == args['password']:
+            if newUser.Emp_Password == str(args['password']):
                 for username in session['users']:
-                    if username == args['username']:
+                    if username == str(args['username']):
                         return "logged"
                     else:
                         session['users'].append(args['username'])
