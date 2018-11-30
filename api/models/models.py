@@ -30,8 +30,8 @@ class Employees(db.Model):
     Emp_Address_Name = Column(String)
     Emp_Address_Num = Column(Integer)
     Emp_Email = Column(String)
-    Emp_Contact_Num = Column(Integer)
-    Emp_Contact_Num2 = Column(Integer)
+    Emp_Contact_Num = Column(String) # Validate
+    Emp_Contact_Num2 = Column(String) # Validate
     Emp_Username = Column(String)
     Emp_Password = Column(String)
     child_Emp_Roles = relationship('Emp_Roles') #2
@@ -73,8 +73,8 @@ class Customers (db.Model):
     Cust_Last_Name = Column(String)
     Cust_Address_Name = Column(String) #Also Cust_Address_Num (nomizw einai to idio me na to grapsoume sto address name)
     Cust_Email = Column(String) #Den kserw pws leme oti mporei na einai null
-    Cust_Contact_Num = Column(String) #tha elega string afou den xreiazetai na kanoume praxeis me to noumero
-    Cust_Contact_Num_2 = Column(String)
+    Cust_Contact_Num = Column(String) # Validate
+    Cust_Contact_Num_2 = Column(String) # Validate
     Cust_Birth_Date = Column(Date)
     child_Issues = relationship('Issues') #6
 

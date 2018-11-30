@@ -31,9 +31,9 @@ class CustomerListAPI(Resource):
                                    location='json')
         self.reqparse.add_argument('Cust_Email', type=int, default=0,
                                    location='json')
-        self.reqparse.add_argument('Cust_Contact_Num', type=int, default=0,
+        self.reqparse.add_argument('Cust_Contact_Num', type=str, default=0,
                                    location='json')
-        self.reqparse.add_argument('Cust_Contact_Num_2', type=int, default=0,
+        self.reqparse.add_argument('Cust_Contact_Num_2', type=str, default=0,
                                    location='json')
         self.reqparse.add_argument('Cust_Birth_Date', type=int, default=0,
                                    location='json')

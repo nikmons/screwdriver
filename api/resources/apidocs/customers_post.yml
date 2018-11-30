@@ -34,6 +34,6 @@ definitions:
       Cust_Contact_Num:
         type: "string"
       Cust_Contact_Num_2:
-        type: "integer"
+        type: "string"
       Cust_Birth_Date:
         type: "integer"

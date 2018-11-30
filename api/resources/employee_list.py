@@ -33,7 +33,7 @@ class EmployeeListAPI(Resource):
                                    location='json')
         self.reqparse.add_argument('Emp_Email', type=str, default="",
                                    location='json')
-        self.reqparse.add_argument('Emp_Contact_Num', type=int, default=0,
+        self.reqparse.add_argument('Emp_Contact_Num', type=str, default=0,
                                    location='json')
         self.reqparse.add_argument('Emp_Contact_Num2', type=str, default=0,
                                    location='json')     
