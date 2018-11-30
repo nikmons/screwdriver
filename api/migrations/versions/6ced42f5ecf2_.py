@@ -21,5 +21,6 @@ def upgrade():
 	op.execute('ALTER TABLE "Employees" ALTER COLUMN "Emp_Contact_Num2" TYPE character varying COLLATE pg_catalog."default"')
 
 def downgrade():
-	op.execute('ALTER TABLE "Employees" ALTER COLUMN "Emp_Contact_Num" TYPE integer')
-	op.execute('ALTER TABLE "Employees" ALTER COLUMN "Emp_Contact_Num2" TYPE integer')
+	#op.execute('ALTER TABLE "Employees" ALTER COLUMN "Emp_Contact_Num" TYPE integer')
+	#op.execute('ALTER TABLE "Employees" ALTER COLUMN "Emp_Contact_Num2" TYPE integer')
+	pass
