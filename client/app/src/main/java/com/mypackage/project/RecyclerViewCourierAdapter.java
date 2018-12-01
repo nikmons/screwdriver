@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerViewCourierAdapter.MyViewHolder> {
 
-    private List<DevicesToRepairModel> devicesList;
+    private List<DeviceModel> devicesList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView trackingNumber, name_surname, address;
@@ -24,7 +24,7 @@ public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
 
-    public RecyclerViewCourierAdapter(List<DevicesToRepairModel> devicesList) {
+    public RecyclerViewCourierAdapter(List<DeviceModel> devicesList) {
         this.devicesList = devicesList;
     }
 
@@ -38,10 +38,10 @@ public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        DevicesToRepairModel devicesToRepairModel = devicesList.get(position);
-        holder.trackingNumber.setText(devicesToRepairModel.trackingNumber);
-        holder.name_surname.setText(devicesToRepairModel.name_surname);
-        holder.address.setText(devicesToRepairModel.address);
+        DeviceModel deviceModel = devicesList.get(position);
+        /*holder.trackingNumber.setText(deviceModel.trackingNumber);
+        holder.name_surname.setText(deviceModel.name_surname);
+        holder.address.setText(deviceModel.address);*/
     }
 
     @Override

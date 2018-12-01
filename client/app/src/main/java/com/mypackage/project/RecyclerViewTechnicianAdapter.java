@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RecyclerViewTechnicianAdapter extends RecyclerView.Adapter<RecyclerViewTechnicianAdapter.MyViewHolder> {
 
-    private List<DevicesToRepairModel> devicesList;
+    private List<DeviceModel> devicesList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView device, endDate, problem;
@@ -24,7 +24,7 @@ public class RecyclerViewTechnicianAdapter extends RecyclerView.Adapter<Recycler
     }
 
 
-    public RecyclerViewTechnicianAdapter(List<DevicesToRepairModel> devicesList) {
+    public RecyclerViewTechnicianAdapter(List<DeviceModel> devicesList) {
         this.devicesList = devicesList;
     }
 
@@ -38,10 +38,10 @@ public class RecyclerViewTechnicianAdapter extends RecyclerView.Adapter<Recycler
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        DevicesToRepairModel devicesToRepairModel = devicesList.get(position);
-        holder.device.setText(devicesToRepairModel.device);
-        holder.problem.setText(devicesToRepairModel.problem);
-        holder.endDate.setText(devicesToRepairModel.endDate);
+        DeviceModel deviceModel = devicesList.get(position);
+        /*holder.device.setText(deviceModel.device);
+        holder.problem.setText(deviceModel.problem);
+        holder.endDate.setText(deviceModel.endDate);*/
     }
 
     @Override
