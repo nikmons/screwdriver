@@ -1,8 +1,9 @@
 #!api/api.py
 import os
 import datetime
+import flask_login
 
-from flask import Flask, jsonify, abort, make_response, session
+from flask import Flask, jsonify, abort, make_response#, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
 from flasgger import Swagger, swag_from
@@ -26,6 +27,8 @@ swagger = Swagger(app, template=swagger_template)
 api = Api(app)
 auth = HTTPBasicAuth()
 db =  SQLAlchemy(app)
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
 
 from resources.employee_list import EmployeeListAPI
 from resources.employee import EmployeeAPI
@@ -38,12 +41,18 @@ from resources.logout import LogoutAPI
 
 import models
 
+"""
 @auth.get_password
 def get_password(username):
     if username == 'admin':
         return 'admin'
     return None
+"""
 
+@login_manager.user_loader
+def load_user(id):
+    print("Load User: {}".format(id))
+    return models.models.Employees.query.get(int(id))
 
 @auth.error_handler
 def unauthorized():

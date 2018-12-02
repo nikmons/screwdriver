@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, abort, make_response, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_login import login_user
 
 from app import auth, db
 from models import models
 
 class LoginAPI(Resource):
-    decorators = [auth.login_required]
+    
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('username', type=str, location='json')
@@ -22,13 +23,9 @@ class LoginAPI(Resource):
         print(args)
         if newUser:
             if newUser.Emp_Password == str(args['password']):
-                for username in session['users']:
-                    if username == str(args['username']):
-                        return "logged"
-                    else:
-                        session['users'].append(args['username'])
-                        return "just logged"
+                login_user(newUser)
+                return "Logged In!"
             else:
-                return "denied"
+                return "Access Denied. Wrong Credentials"
         else:
             return args

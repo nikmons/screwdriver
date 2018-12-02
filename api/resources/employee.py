@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_login import login_required
 
-from app import auth, db
+from app import db
 from models import models
 
 class EmployeeAPI(Resource):
-    decorators = [auth.login_required]
+    decorators = [login_required]
 
     def __init__(self):
         super(EmployeeAPI, self).__init__()

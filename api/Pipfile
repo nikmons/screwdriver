@@ -17,6 +17,7 @@ python-dotenv = "*"
 flasgger = "*"
 rope = "*"
 pylint-flask = "*"
+flask-login = "*"
 
 [dev-packages]
 

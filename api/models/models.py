@@ -1,3 +1,5 @@
+import datetime
+
 from app import db
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
@@ -38,6 +40,21 @@ class Employees(db.Model):
     child_Emp_logins = relationship('Employees_Logins') #3
     child_Issue_Timeline = relationship('Issue_Timeline') #4
 
+    # TODO: Implement
+    def is_authenticated(self):
+        return True
+ 
+    # TODO: Implement
+    def is_active(self):
+        return True
+ 
+    # TODO: Implement
+    def is_anonymous(self):
+        return False
+ 
+    def get_id(self):
+        return self.Emp_id
+
 class Emp_Roles(db.Model):
     __tablename__ ='Emp_Roles'
     Emp_Role_id = Column(Integer,primary_key = True)
@@ -58,10 +75,10 @@ class Employees_Logins(db.Model):
 class Devices (db.Model):
     __tablename__ = 'Devices'
     Dev_id = Column(Integer, primary_key = True)
-    Dev_Creator = Column(Date)
+    Dev_Created = Column(DateTime, default=datetime.datetime.utcnow)
     Dev_Manufacturer = Column(String)
     Dev_Model = Column (String)
-    Dev_Model_Year = Column(Date)
+    Dev_Model_Year = Column(String)
     Dev_Identifier_Code = Column(String)  # Integer at db schema
     child_Issues = relationship('Issues') #5
 
@@ -130,7 +147,7 @@ class Issue_Timeline (db.Model):
     Issue_id = Column (Integer)
     Emp_id = Column (Integer, ForeignKey('Employees.Emp_id')) #4
     Act_id = Column (Integer, ForeignKey("Action.Act_id")) #13
-    Ist_Created = Column (Date)
+    Ist_Created = Column (DateTime)
     Ist_Comment = Column (String)
 
 class Issues (db.Model):
@@ -141,6 +158,6 @@ class Issues (db.Model):
      Stat_id = Column(Integer, ForeignKey("State.Stat_id"))  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
      Act_id = Column(Integer, ForeignKey("Action.Act_id")) #10
-     Issue_Created = Column(Date)
+     Issue_Created = Column(DateTime)
      Issue_Closed = Column(Date)
 #______________________R  E  D________________________________________>
