@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.com/NickMns/screwdriver.svg?branch=master)](https://travis-ci.com/NickMns/screwdriver)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![GitHub contributors](https://img.shields.io/github/contributors/Naereen/StrapDown.js.svg)](https://github.com/NickMns/screwdriver/graphs/contributors/)
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/nickmns/screwdriver.svg)](http://isitmaintained.com/project/nickmns/screwdriver "Percentage of issues still open")
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/nickmns/screwdriver.svg)](http://isitmaintained.com/project/nickmns/screwdriver "Average time to resolve an issue")
 
 # screwdriver
 Manage/Monitor IT hardware servicing lifecycle
