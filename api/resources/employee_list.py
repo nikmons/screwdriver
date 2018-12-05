@@ -2,10 +2,7 @@ from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_login import login_required
 
-from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token
-)
+from flask_jwt_extended import jwt_required
 
 from app import db
 from models import models
