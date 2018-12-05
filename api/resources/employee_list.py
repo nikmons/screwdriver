@@ -2,6 +2,11 @@ from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_login import login_required
 
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token
+)
+
 from app import db
 from models import models
 
@@ -37,9 +42,9 @@ class EmployeeListAPI(Resource):
         self.reqparse.add_argument('Emp_Contact_Num', type=str, default=0,
                                    location='json')
         self.reqparse.add_argument('Emp_Contact_Num2', type=str, default=0,
-                                   location='json')     
+                                   location='json')
         self.reqparse.add_argument('Emp_Username', type=str, default="",
-                                   location='json')     
+                                   location='json')
         self.reqparse.add_argument('Emp_Password', type=str, default="",
                                    location='json')
         super(EmployeeListAPI, self).__init__()
@@ -52,6 +57,7 @@ class EmployeeListAPI(Resource):
         print(employees)
         return {'employees': [marshal(employee, employee_fields) for employee in employees]}
 
+    @jwt_required
     def post(self):
         """
         file: apidocs/employees_post.yml
