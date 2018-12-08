@@ -8,9 +8,9 @@
         android:title=""
         app:showAsAction="always" />
     <item
-        android:id="@+id/logout"
+        android:id="@+id/quit"
         android:orderInCategory="100"
-        android:icon="@mipmap/ic_logout"
+        android:icon="@mipmap/ic_quit"
         android:title=""
         app:showAsAction="always" />
 </menu>

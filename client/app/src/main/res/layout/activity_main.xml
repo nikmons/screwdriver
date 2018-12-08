@@ -16,7 +16,7 @@
         android:id="@+id/myText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="App Promoter" />
+        android:text="Test" />
 
     <EditText
         android:id="@+id/user"

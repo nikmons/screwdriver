@@ -17,5 +17,14 @@
             android:icon="@drawable/ic_menu_insert"
             android:title="Insert" />
     </group>
-
+    <item android:title="">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_menu_logout"
+                    android:title="Log Out" />
+            </group>
+        </menu>
+    </item>
 </menu>

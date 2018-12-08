@@ -1,10 +1,14 @@
 package com.mypackage.project;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,6 +52,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ProgressBar progressBar;
     private Toast toast;
     private Gson gson;
+    private Helper helper;
+    private String[] parts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +64,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Display display = getWindowManager().getDefaultDisplay();
         w = display.getWidth();
         h = display.getHeight();
+        helper = new Helper();
+        parts = helper.getPrefs(this);
         gson = new Gson();
         toastMessage = new TextView(this);
         toastMessage.setTextColor(Color.WHITE);
         toastMessage.setTypeface(null, Typeface.BOLD);
         toastMessage.setPadding(w * 5 / 100, h * 2 / 100, w * 5 / 100, h * 2 / 100);
-        toastMessage.setTextSize((float) (w * 1 / 100));
+        toastMessage.setTextSize((float) (w * 2 / 100));
         toast = Toast.makeText(getApplicationContext(), null,
                 Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
@@ -83,7 +91,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         menu = navigationView.getMenu();
-        for (int i = 0; i < menu.size(); i++) {
+        for (int i = 0; i < menu.size() - 1; i++) {
             menu.getItem(i).setVisible(false);
         }
         UserModel userModel = new UserModel();
@@ -176,19 +184,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         selectedId = menu.getItem(min - 1).getItemId();
         if (min == 1) {
             selectedId = menu.getItem(0).getItemId();
-            //new GetDevicesForRepair(homeActivity).execute();
-            EmployeeModel model = new EmployeeModel();
-            model.Emp_Address_Name = "000";
-            model.Emp_Address_Num = 12;
-            model.Emp_Contact_Num = "000";
-            model.Emp_Contact_Num2 = "2108";
-            model.Emp_Email = "2108";
-            model.Emp_First_Name = "2108";
-            model.Emp_Last_Name = "dsd";
-            model.Emp_Password = "dsd";
-            model.Emp_Username = "dsd";
-            new Helper.Post(progressBar, "employees", model).execute();
-            new Helper.Delete(progressBar, "employees", 2).execute();
+            getDevices();
         }
     }
 
@@ -216,18 +212,35 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.refresh) {
-            try {
-                String json = new Helper.Get(progressBar, "devices").execute().get();
-                currentDevices = (List<DeviceModel>) gson.fromJson(json, DeviceModel.class);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            getDevices();
         } else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Confirmation");
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to exit application?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        if (Build.VERSION.SDK_INT >= 21) {
+                                            finishAndRemoveTask();
+                                        } else {
+                                            finish();
+                                        }
+                                    }
+                                })
 
-        }
-        return super.onOptionsItemSelected(item);
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+            return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -252,6 +265,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             } else if (id == R.id.nav_insert) {
 
             }
+            else
+            {
+
+            }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -268,11 +285,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
             recyclerView.setAdapter(technicianAdapter);
         }
-        updateDevicesMenuCounts();
+        menu.getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
     }
 
-    private void updateDevicesMenuCounts() {
-        menu.getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
+    private void getDevices()
+    {
+        try {
+            String json = new Helper.Get(progressBar, "devices").execute().get();
+            currentDevices = (List<DeviceModel>) gson.fromJson(json, DeviceModel.class);
+            devicesList = new ArrayList<>();
+            for (DeviceModel itemModel : currentDevices) {
+                devicesList.add(itemModel);
+            }
+            devicesToRepair();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

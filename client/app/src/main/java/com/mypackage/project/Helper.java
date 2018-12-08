@@ -2,6 +2,7 @@ package com.mypackage.project;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -111,7 +112,7 @@ public class Helper {
                 httpPost.setEntity(entity);
                 HttpResponse response = client.execute(httpPost);
                 HttpEntity httpEntity = response.getEntity();
-                return EntityUtils.toString(httpEntity);
+                return EntityUtils.toString(httpEntity).replace("\n","");
             } catch (Exception e) {
                 return new String("Exception: " + e.getMessage());
             }
@@ -185,5 +186,14 @@ public class Helper {
             InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    public String[] getPrefs(Context context)
+    {
+        String[] parts = new String[2];
+        SharedPreferences pref = context.getSharedPreferences("MyPref", 0);
+        parts[0] = pref.getString("access_token", null);
+        parts[1] = pref.getString("refresh_token", null);
+        return parts;
     }
 }

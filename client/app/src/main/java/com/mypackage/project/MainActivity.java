@@ -2,9 +2,11 @@ package com.mypackage.project;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
@@ -62,19 +64,18 @@ public class MainActivity extends AppCompatActivity {
         toastMessage.setTextColor(Color.WHITE);
         toastMessage.setTypeface(null, Typeface.BOLD);
         toastMessage.setPadding(w * 5 / 100, h * 2 / 100, w * 5 / 100, h * 2 / 100);
-        toastMessage.setTextSize((float) (w * 1 / 100));
+        toastMessage.setTextSize((float) (w * 2 / 100));
         toast = Toast.makeText(getApplicationContext(), null,
                 Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
         relativeParams = (RelativeLayout.LayoutParams) text.getLayoutParams();
-        relativeParams.setMargins(w * 28 / 100, h * 5 / 100, 0, 0);
+        relativeParams.setMargins(0, h * 5 / 100, 0, 0);
         relativeParams.width = w;
         relativeParams.height = h * 10 / 100;
         text.setLayoutParams(relativeParams);
         text.setTypeface(null, Typeface.BOLD_ITALIC);
+        text.setGravity(Gravity.CENTER);
         text.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 7 / 100);
-
-
         relativeParams = (RelativeLayout.LayoutParams) user.getLayoutParams();
         relativeParams.setMargins(w * 25 / 100, h * 18 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
@@ -118,13 +119,19 @@ public class MainActivity extends AppCompatActivity {
                         if (!res.contains("Logged"))
                         {
                             toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
-                            toastMessage.setText(res);
+                            toastMessage.setText(res.replace("\"",""));
                             toast.setView(toastMessage);
                             toast.show();
                         }
                         else {
+                            SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("access_token", "access value1");
+                            editor.putString("refresh_token", "refresh value1");
+                            editor.commit();
                             Intent intent = new Intent(mainActivity, HomeActivity.class);
                             startActivity(intent);
+                            finish();
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
