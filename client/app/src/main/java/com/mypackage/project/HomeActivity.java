@@ -3,7 +3,6 @@ package com.mypackage.project;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -29,36 +28,26 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public List<DeviceModel> devicesList = new ArrayList<>();
     private List<DeviceModel> currentDevices = new ArrayList<>();
-    int h, w;
+    private int h, w;
     private RecyclerView recyclerView;
     private RecyclerViewTechnicianAdapter technicianAdapter;
     private RecyclerViewCourierAdapter courierAdapter;
     private Menu menu;
     private int selectedId;
     private boolean isCourier = false;
-    private HomeActivity homeActivity;
     private boolean firstTime = true;
-    TextView toastMessage;
-    ProgressBar progressBar;
-    Toast toast;
+    private TextView toastMessage;
+    private ProgressBar progressBar;
+    private Toast toast;
+    private Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +58,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Display display = getWindowManager().getDefaultDisplay();
         w = display.getWidth();
         h = display.getHeight();
-        homeActivity = this;
+        gson = new Gson();
         toastMessage = new TextView(this);
         toastMessage.setTextColor(Color.WHITE);
         toastMessage.setTypeface(null, Typeface.BOLD);
@@ -110,8 +99,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             if (Integer.parseInt(parts[i].trim()) == 4) {
                 isCourier = true;
                 menuItem = menu.getItem(0);
-            }
-            else {
+            } else {
                 menuItem = menu.getItem(Integer.parseInt(parts[i].trim()) - 1);
             }
             if (Integer.parseInt(parts[i].trim()) < min) {
@@ -196,11 +184,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             model.Emp_Contact_Num2 = "2108";
             model.Emp_Email = "2108";
             model.Emp_First_Name = "2108";
-            model.Emp_Last_Name= "dsd";
-            model.Emp_Password= "dsd";
-            model.Emp_Username= "dsd";
-            new Helper.Post(progressBar, toastMessage, toast, "employees", model).execute();
-            new Helper.Delete(progressBar, toastMessage, toast, "employees", 2).execute();
+            model.Emp_Last_Name = "dsd";
+            model.Emp_Password = "dsd";
+            model.Emp_Username = "dsd";
+            new Helper.Post(progressBar, "employees", model).execute();
+            new Helper.Delete(progressBar, "employees", 2).execute();
         }
     }
 
@@ -228,7 +216,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.refresh) {
-            new GetDevicesForRepair(homeActivity).execute();
+            try {
+                String json = new Helper.Get(progressBar, "devices").execute().get();
+                currentDevices = (List<DeviceModel>) gson.fromJson(json, DeviceModel.class);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         } else {
 
         }
@@ -302,64 +297,3 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 }
-
-class GetDevicesForRepair extends AsyncTask<String, Void, String> {
-
-    private HomeActivity homeActivity;
-
-    public GetDevicesForRepair(HomeActivity homeActivity) {
-        this.homeActivity = homeActivity;
-    }
-
-    protected void onPreExecute() {
-        homeActivity.progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    protected String doInBackground(String... arg0) {
-        try {
-            String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/devices";
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet();
-            request.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials("admin", "admin"), "UTF-8", false));
-            request.setURI(new URI(link));
-            HttpResponse response = client.execute(request);
-            BufferedReader in = new BufferedReader(new
-                    InputStreamReader(response.getEntity().getContent()));
-
-            String json = "", line;
-            while ((line = in.readLine()) != null) {
-                json = line;
-                int index = json.indexOf("[");
-                if (index >= 0) {
-                    json = json.substring(index);
-                    json = json.substring(0, json.length() - 1);
-                }
-                break;
-            }
-            in.close();
-            Gson gson = new Gson();
-            DeviceModel[] model = gson.fromJson(json, DeviceModel[].class);
-            homeActivity.devicesList = Arrays.asList(model);
-            return "Done";
-        } catch (Exception e) {
-            return new String("Exception: " + e.getMessage());
-        }
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        homeActivity.progressBar.setVisibility(View.INVISIBLE);
-        if (result.equals("Done")) {
-            homeActivity.devicesToRepair();
-        }
-        else
-        {
-            homeActivity.toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
-            homeActivity.toastMessage.setText(result);
-            homeActivity.toast.setView(homeActivity.toastMessage);
-            homeActivity.toast.show();
-        }
-    }
-}
-

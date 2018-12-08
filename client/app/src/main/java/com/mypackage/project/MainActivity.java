@@ -20,14 +20,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.concurrent.ExecutionException;
+
 public class MainActivity extends AppCompatActivity {
-    TextView toastMessage, text;
-    Toast toast;
-    EditText user, pass;
-    Button logIn;
-    ProgressBar progressBar;
-    int h, w;
-    MainActivity mainActivity;
+    private TextView toastMessage, text;
+    private Toast toast;
+    private EditText user, pass;
+    private Button logIn;
+    private ProgressBar progressBar;
+    private int h, w;
+    private MainActivity mainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +110,27 @@ public class MainActivity extends AppCompatActivity {
                     toast.setView(toastMessage);
                     toast.show();
                 } else {
-                    Intent intent = new Intent(mainActivity, HomeActivity.class);
-                    startActivity(intent);
+                    LoginModel model = new LoginModel();
+                    model.username = user.getText().toString();
+                    model.password = pass.getText().toString();
+                    try {
+                        String res = new Helper.Post(progressBar, "login", model).execute().get();
+                        if (!res.contains("Logged"))
+                        {
+                            toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
+                            toastMessage.setText(res);
+                            toast.setView(toastMessage);
+                            toast.show();
+                        }
+                        else {
+                            Intent intent = new Intent(mainActivity, HomeActivity.class);
+                            startActivity(intent);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
