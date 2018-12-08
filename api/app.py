@@ -6,6 +6,7 @@ import flask_login
 from flask import Flask, jsonify, abort, make_response#, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flasgger import Swagger, swag_from
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -27,8 +28,9 @@ swagger = Swagger(app, template=swagger_template)
 api = Api(app)
 auth = HTTPBasicAuth()
 db =  SQLAlchemy(app)
-login_manager = flask_login.LoginManager()
-login_manager.init_app(app)
+#login_manager = flask_login.LoginManager()
+#login_manager.init_app(app)
+jwt = JWTManager(app)
 
 from resources.employee_list import EmployeeListAPI
 from resources.employee import EmployeeAPI
@@ -40,19 +42,6 @@ from resources.login import LoginAPI
 from resources.logout import LogoutAPI
 
 import models
-
-"""
-@auth.get_password
-def get_password(username):
-    if username == 'admin':
-        return 'admin'
-    return None
-"""
-
-@login_manager.user_loader
-def load_user(id):
-    print("Load User: {}".format(id))
-    return models.models.Employees.query.get(int(id))
 
 @auth.error_handler
 def unauthorized():

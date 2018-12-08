@@ -8,7 +8,7 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import safe_str_cmp
 
-from app import auth, db
+from app import auth, db, jwt
 from models import models
 
 class LoginAPI(Resource):
