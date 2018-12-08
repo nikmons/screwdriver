@@ -16,7 +16,11 @@ parameters:
       $ref: "#/definitions/Login"
 responses:
   200:
+    schema:
+      $ref: "#/definitions/JWT"
     description: Login Succesfull
+  401:
+    description: Invalid Credentials!
 definitions:
   Login:
     type: "object"
@@ -25,3 +29,11 @@ definitions:
         type: "string"
       password:
         type: "string"
+  JWT:
+    type: "object"
+    properties:
+      access_token:
+        type: "string"
+      refresh_token:
+        type: "string"
+      
