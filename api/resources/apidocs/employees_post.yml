@@ -2,11 +2,6 @@ Endpoint to add Employees
 ---
 tags:
   - Employees
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
 parameters:
   - in: "body"
     name: "body"

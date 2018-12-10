@@ -2,11 +2,11 @@ Endpoint to add Customers
 ---
 tags:
   - Customers
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
 parameters:
   - in: "body"
     name: "body"

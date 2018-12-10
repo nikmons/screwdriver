@@ -1,12 +1,8 @@
-Endpoint to Login
+User authenticate method.
 ---
 tags:
   - User
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
+description: Authenticate user with supplied credentials.
 parameters:
   - in: "body"
     name: "body"
@@ -16,11 +12,9 @@ parameters:
       $ref: "#/definitions/Login"
 responses:
   200:
-    schema:
-      $ref: "#/definitions/JWT"
-    description: Login Succesfull
-  401:
-    description: Invalid Credentials!
+    description: User successfully logged in.
+  400:
+    description: User login failed.
 definitions:
   Login:
     type: "object"
@@ -36,4 +30,3 @@ definitions:
         type: "string"
       refresh_token:
         type: "string"
-      

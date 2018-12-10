@@ -2,11 +2,11 @@ Endpoint returning a list of devices
 ---
 tags:
   - Devices
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
 responses:
   200:
     description: A list of Devices

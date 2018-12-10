@@ -1,8 +1,7 @@
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from flask_login import login_required
-
-from flask_jwt_extended import jwt_required
+from flasgger import swag_from
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
@@ -22,7 +21,6 @@ employee_fields = {
 }
 
 class EmployeeListAPI(Resource):
-    decorators = [login_required]
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -46,19 +44,20 @@ class EmployeeListAPI(Resource):
                                    location='json')
         super(EmployeeListAPI, self).__init__()
 
+    @jwt_required
+    @swag_from("apidocs/employees_get.yml")
     def get(self):
-        """
-        file: apidocs/employees_get.yml
-        """
+        current_user = get_jwt_identity()
+        print(current_user)
         employees = models.Employees.query.all() #Query database
         print(employees)
         return {'employees': [marshal(employee, employee_fields) for employee in employees]}
 
     @jwt_required
+    @swag_from("apidocs/employees_post.yml")
     def post(self):
-        #"""
-        #file: apidocs/employees_post.yml
-        #"""
+        current_user = get_jwt_identity()
+        print(current_user)
         args = self.reqparse.parse_args()
         print(args)
         employee = models.Employees(Emp_Created=None,Emp_First_Name=args["Emp_First_Name"],
