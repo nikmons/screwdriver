@@ -18,7 +18,7 @@ class LogoutAPI(Resource):
     def delete(self):
         jti = get_raw_jwt()["jti"]
         blacklist.add(jti)
-        return jsonify({"msg":"Successfully logged out"}), 200
+        return {"message": "Successfully logged out"}, 200
 
     @jwt_required
     @swag_from("apidocs/logout_post.yml")
