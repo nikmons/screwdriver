@@ -18,6 +18,7 @@ flasgger = "*"
 rope = "*"
 pylint-flask = "*"
 flask-login = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 

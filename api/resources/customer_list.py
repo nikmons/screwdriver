@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from flask_login import login_required
+from flasgger import swag_from
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
@@ -18,7 +19,6 @@ customer_fields = {
 }
 
 class CustomerListAPI(Resource):
-    decorators = [login_required]
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -41,19 +41,16 @@ class CustomerListAPI(Resource):
 
         super(CustomerListAPI, self).__init__()
 
+    @jwt_required
+    @swag_from("apidocs/customers_get.yml")
     def get(self):
-        """
-        file: apidocs/customers_get.yml
-        """
         customers = models.Customers.query.all() #Query database
         print(customers)
         return {'Customers': [marshal(customer, customer_fields) for customer in customers]}
 
+    @jwt_required
+    @swag_from("apidocs/customers_post.yml")
     def post(self):
-        """
-        file: apidocs/customers_post.yml
-        """
-
         args = self.reqparse.parse_args()
         print(args)
         customer = models.Devices(Cust_Created=args["Cust_Created"],Cust_First_Name=args["Cust_First_Name"],

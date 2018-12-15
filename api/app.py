@@ -1,11 +1,14 @@
 #!api/api.py
 import os
 import datetime
-import flask_login
 
 from flask import Flask, jsonify, abort, make_response#, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from flask_httpauth import HTTPBasicAuth
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity, create_refresh_token,
+    jwt_refresh_token_required, get_raw_jwt
+)
 from flasgger import Swagger, swag_from
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -17,18 +20,44 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIF
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["ENVIRONMENT"] = os.getenv("ENV")
 app.config["CSRF_ENABLED"] = True
-app.secret_key = "prepei na broume kati gi auto edw to kleidi" # TODO: handle secret key
-#print(os.getenv("ENV"))
-#print(os.getenv("DATABASE_URL"))
+app.config["SWAGGER"] = {"title":"Swagger JWT Authentication App", "uiversion":3}
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+app.config['PROPAGATE_EXCEPTIONS'] = True
+app.secret_key = "secret-key" # TODO: handle secret key
 
-swagger_template = {'securityDefinitions': { 'basicAuth': { 'type': 'basic' } }}
+swagger_template={
+        "openapi": "2.0.0",
+        "info": {
+            "title": "Scewdriver API (JWT Auth)",
+            "version": "1.0",
+        },
+        "securityDefinitions": {
+            "Bearer":{
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        },
+        "produces": [
+            "application/json",
+        ],
+        "security": [
+            {"Bearer": "[]"}
+        ]
+    }
 
-swagger = Swagger(app, template=swagger_template)
+swagger = Swagger(app, template=swagger_template)#, template=swagger_template)
 api = Api(app)
-auth = HTTPBasicAuth()
 db =  SQLAlchemy(app)
-login_manager = flask_login.LoginManager()
-login_manager.init_app(app)
+jwt = JWTManager(app)
+
+blacklist = set()
+
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in blacklist
 
 from resources.employee_list import EmployeeListAPI
 from resources.employee import EmployeeAPI
@@ -41,24 +70,11 @@ from resources.logout import LogoutAPI
 
 import models
 
-"""
-@auth.get_password
-def get_password(username):
-    if username == 'admin':
-        return 'admin'
-    return None
-"""
-
-@login_manager.user_loader
-def load_user(id):
-    print("Load User: {}".format(id))
-    return models.models.Employees.query.get(int(id))
-
-@auth.error_handler
-def unauthorized():
-    # return 403 instead of 401 to prevent browsers from displaying the default
-    # auth dialog
-    return make_response(jsonify({'message': 'Unauthorized access'}), 403)
+# @auth.error_handler
+# def unauthorized():
+#     # return 403 instead of 401 to prevent browsers from displaying the default
+#     # auth dialog
+#     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
 api.add_resource(LoginAPI, '/todo/api/v1.0/login', endpoint='login')
 api.add_resource(LogoutAPI, '/todo/api/v1.0/logout', endpoint='logout')

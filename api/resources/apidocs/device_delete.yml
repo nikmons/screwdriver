@@ -2,11 +2,11 @@ Endpoint to delete a Device
 ---
 tags:
   - Devices
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
 parameters:
   - name: id
     in: path

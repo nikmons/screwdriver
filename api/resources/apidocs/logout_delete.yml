@@ -1,0 +1,10 @@
+Endpoint to Logout
+---
+tags:
+  - User
+description: Revoke JWT Access Token
+responses:
+  200:
+    description: User successfully logged out.
+  400:
+    description: User logout failed.

@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
-import flask_login
+from flask_jwt_extended import jwt_required, get_raw_jwt
+from flasgger import swag_from
 
-from app import auth, db
+from app import db, blacklist
 from models import models
 
 class LogoutAPI(Resource):
@@ -12,13 +13,14 @@ class LogoutAPI(Resource):
         self.reqparse.add_argument('username', required = True, type=str, location='json')
         super(LogoutAPI, self).__init__()
 
+    @jwt_required
+    @swag_from("apidocs/logout_delete.yml")
+    def delete(self):
+        jti = get_raw_jwt()["jti"]
+        blacklist.add(jti)
+        return {"message": "Successfully logged out"}, 200
 
+    @jwt_required
+    @swag_from("apidocs/logout_post.yml")
     def post(self):
-        """
-        file: apidocs/logout_post.yml
-        """
-
-        flask_login.logout_user()
-
-        #TODO: Check if already logged in
-        return "Logged out"
+        return "Old Logout - Does Nothing"

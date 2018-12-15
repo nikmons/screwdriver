@@ -2,11 +2,11 @@ Endpoint to add Devices
 ---
 tags:
   - Devices
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
 parameters:
   - in: "body"
     name: "body"

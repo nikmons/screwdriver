@@ -2,11 +2,11 @@ Endpoint to delete an Employee
 ---
 tags:
   - Employees
-securityDefinitions:
-  basicAuth:
-    type: basic
-security:
-  - basicAuth: []
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
 parameters:
   - name: id
     in: path
