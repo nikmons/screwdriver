@@ -22,6 +22,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mainActivity = this;
+        Helper helper = new Helper();
+        String[] parts = helper.getPrefs(this);
+        if (parts[0] != null && parts[0].length() > 0)
+        {
+            Intent intent = new Intent(mainActivity, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
         user = (EditText) findViewById(R.id.user);
         pass = (EditText) findViewById(R.id.pass);
         Display display = getWindowManager().getDefaultDisplay();
@@ -115,19 +126,20 @@ public class MainActivity extends AppCompatActivity {
                     model.username = user.getText().toString();
                     model.password = pass.getText().toString();
                     try {
-                        String res = new Helper.Post(progressBar, "login", model).execute().get();
-                        if (!res.contains("Logged"))
+                        String res = new Helper.Post(progressBar, null, "login", model).execute().get();
+                        JSONObject json = new JSONObject(res);
+                        if (json.getString("message").contains("Invalid"))
                         {
                             toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
-                            toastMessage.setText(res.replace("\"",""));
+                            toastMessage.setText(json.getString("message"));
                             toast.setView(toastMessage);
                             toast.show();
                         }
                         else {
                             SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
                             SharedPreferences.Editor editor = pref.edit();
-                            editor.putString("access_token", "access value1");
-                            editor.putString("refresh_token", "refresh value1");
+                            editor.putString("access_token", json.getString("access_token"));
+                            editor.putString("refresh_token", json.getString("refresh_token"));
                             editor.commit();
                             Intent intent = new Intent(mainActivity, HomeActivity.class);
                             startActivity(intent);
@@ -136,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }

@@ -32,6 +32,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -39,7 +42,7 @@ import java.util.concurrent.ExecutionException;
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public List<DeviceModel> devicesList = new ArrayList<>();
-    private List<DeviceModel> currentDevices = new ArrayList<>();
+    private DeviceModel[] currentDevices;
     private int h, w;
     private RecyclerView recyclerView;
     private RecyclerViewTechnicianAdapter technicianAdapter;
@@ -47,7 +50,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Menu menu;
     private int selectedId;
     private boolean isCourier = false;
-    private boolean firstTime = true;
     private TextView toastMessage;
     private ProgressBar progressBar;
     private Toast toast;
@@ -248,10 +250,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id != selectedId) {
-            if (firstTime) {
-                firstTime = false;
-                menu.getItem(0).setChecked(false);
-            }
             selectedId = id;
             if (id == R.id.nav_current) {
                 devicesList = new ArrayList<>();
@@ -267,7 +265,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
             else
             {
-
+                try {
+                    new Helper.Delete(progressBar, parts, "logout", -1).execute().get();
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("access_token", "");
+                    editor.putString("refresh_token", "");
+                    editor.commit();
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -276,28 +288,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void devicesToRepair() {
-
-        if (isCourier) {
-            courierAdapter = new RecyclerViewCourierAdapter(devicesList);
-            recyclerView.setAdapter(courierAdapter);
-        } else {
-            technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-            recyclerView.setAdapter(technicianAdapter);
-        }
-        menu.getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
-    }
-
     private void getDevices()
     {
         try {
-            String json = new Helper.Get(progressBar, "devices").execute().get();
-            currentDevices = (List<DeviceModel>) gson.fromJson(json, DeviceModel.class);
+            String json = new Helper.Get(progressBar, parts, "devices").execute().get();
+            currentDevices = gson.fromJson(json, DeviceModel[].class);
             devicesList = new ArrayList<>();
             for (DeviceModel itemModel : currentDevices) {
                 devicesList.add(itemModel);
             }
-            devicesToRepair();
+            if (isCourier) {
+                courierAdapter = new RecyclerViewCourierAdapter(devicesList);
+                recyclerView.setAdapter(courierAdapter);
+            } else {
+                technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
+                recyclerView.setAdapter(technicianAdapter);
+            }
+            menu.getItem(0).setTitle("Devices (" + currentDevices.length + ")");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

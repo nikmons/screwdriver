@@ -25,6 +25,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,10 +37,12 @@ public class Helper {
 
         private ProgressBar progressBar;
         private String prefix;
+        private String[] parts;
 
-        public Get(ProgressBar progressBar, String prefix) {
+        public Get(ProgressBar progressBar, String[] parts, String prefix) {
             this.progressBar = progressBar;
             this.prefix = prefix;
+            this.parts = parts;
         }
 
         protected void onPreExecute() {
@@ -52,7 +55,7 @@ public class Helper {
                 String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
                 HttpClient client = new DefaultHttpClient();
                 HttpGet request = new HttpGet();
-                request.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials("admin", "admin"), "UTF-8", false));
+                request.addHeader("Authorization", "Bearer " + parts[0]);
                 request.setURI(new URI(link));
                 HttpResponse response = client.execute(request);
                 BufferedReader in = new BufferedReader(new
@@ -86,11 +89,13 @@ public class Helper {
         private ProgressBar progressBar;
         private Object obj;
         private String prefix;
+        private String[] parts;
 
-        public Post(ProgressBar progressBar, String prefix, Object obj) {
+        public Post(ProgressBar progressBar, String[] parts, String prefix, Object obj) {
             this.progressBar = progressBar;
             this.obj = obj;
             this.prefix = prefix;
+            this.parts = parts;
         }
 
         protected void onPreExecute() {
@@ -105,14 +110,14 @@ public class Helper {
                 String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
                 HttpClient client = new DefaultHttpClient();
                 HttpPost httpPost = new HttpPost(link);
-                String authorizationString = "Basic " + Base64.encodeToString("admin:admin".getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-                httpPost.setHeader("Authorization", authorizationString);
+                if (parts != null)
+                    httpPost.addHeader("Authorization", "Bearer " + parts[0]);
                 StringEntity entity = new StringEntity(json, HTTP.UTF_8);
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
                 HttpResponse response = client.execute(httpPost);
                 HttpEntity httpEntity = response.getEntity();
-                return EntityUtils.toString(httpEntity).replace("\n","");
+                return EntityUtils.toString(httpEntity).replace("\n", "");
             } catch (Exception e) {
                 return new String("Exception: " + e.getMessage());
             }
@@ -130,11 +135,13 @@ public class Helper {
         private ProgressBar progressBar;
         private int id;
         private String prefix;
+        private String[] parts;
 
-        public Delete(ProgressBar progressBar, String prefix, int id) {
+        public Delete(ProgressBar progressBar, String[] parts, String prefix, int id) {
             this.progressBar = progressBar;
             this.id = id;
             this.prefix = prefix;
+            this.parts = parts;
         }
 
         protected void onPreExecute() {
@@ -144,11 +151,14 @@ public class Helper {
         @Override
         protected String doInBackground(String... arg0) {
             try {
-                String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix + "/" + id;
+                String link;
+                if (id == -1)
+                    link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
+                else
+                    link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix + "/" + id;
                 HttpClient client = new DefaultHttpClient();
                 HttpDelete httpDelete = new HttpDelete(link);
-                String authorizationString = "Basic " + Base64.encodeToString("admin:admin".getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-                httpDelete.setHeader("Authorization", authorizationString);
+                httpDelete.addHeader("Authorization", "Bearer " + parts[0]);
                 HttpResponse response = client.execute(httpDelete);
                 HttpEntity httpEntity = response.getEntity();
                 return EntityUtils.toString(httpEntity);
@@ -188,8 +198,7 @@ public class Helper {
         }
     }
 
-    public String[] getPrefs(Context context)
-    {
+    public String[] getPrefs(Context context) {
         String[] parts = new String[2];
         SharedPreferences pref = context.getSharedPreferences("MyPref", 0);
         parts[0] = pref.getString("access_token", null);

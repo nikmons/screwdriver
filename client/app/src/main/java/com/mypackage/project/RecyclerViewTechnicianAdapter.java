@@ -39,9 +39,9 @@ public class RecyclerViewTechnicianAdapter extends RecyclerView.Adapter<Recycler
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         DeviceModel deviceModel = devicesList.get(position);
-        /*holder.device.setText(deviceModel.device);
-        holder.problem.setText(deviceModel.problem);
-        holder.endDate.setText(deviceModel.endDate);*/
+        holder.device.setText(deviceModel.Dev_Manufacturer + " " + deviceModel.Dev_Model);
+        //holder.problem.setText(deviceModel.problem);
+        //holder.endDate.setText(deviceModel.endDate);
     }
 
     @Override
