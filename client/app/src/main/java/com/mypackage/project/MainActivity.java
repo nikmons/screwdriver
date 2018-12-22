@@ -51,12 +51,13 @@ public class MainActivity extends AppCompatActivity {
         mainActivity = this;
         Helper helper = new Helper();
         String[] parts = helper.getPrefs(this);
-        if (parts[0] != null && parts[0].length() > 0)
+        /*if (parts[0] != null && parts[0].length() > 0)
         {
             Intent intent = new Intent(mainActivity, HomeActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
+        final RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl) ;
         user = (EditText) findViewById(R.id.user);
         pass = (EditText) findViewById(R.id.pass);
         Display display = getWindowManager().getDefaultDisplay();
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     model.username = user.getText().toString();
                     model.password = pass.getText().toString();
                     try {
-                        String res = new Helper.Post(progressBar, null, "login", model).execute().get();
+                        String res = new Helper.Post(rl, null, "login", model).execute().get();
                         JSONObject json = new JSONObject(res);
                         if (json.getString("message").contains("Invalid"))
                         {

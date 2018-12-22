@@ -48,13 +48,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerViewTechnicianAdapter technicianAdapter;
     private RecyclerViewCourierAdapter courierAdapter;
     private Menu menu;
-    private int selectedId;
-    private boolean isCourier = false;
+    private int selectedId, min;
+    private boolean isCourier = false, isTechnician = true;
     private TextView toastMessage;
     private ProgressBar progressBar;
+    private RelativeLayout rl;
     private Toast toast;
     private Gson gson;
     private Helper helper;
+    private HomeActivity homeActivity;
     private String[] parts;
 
     @Override
@@ -66,7 +68,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Display display = getWindowManager().getDefaultDisplay();
         w = display.getWidth();
         h = display.getHeight();
+        homeActivity = this;
         helper = new Helper();
+        rl = (RelativeLayout) findViewById(R.id.rl);
         parts = helper.getPrefs(this);
         gson = new Gson();
         toastMessage = new TextView(this);
@@ -83,7 +87,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         progressBar.getIndeterminateDrawable().setColorFilter(
                 getResources().getColor(R.color.colorPrimaryDark),
                 android.graphics.PorterDuff.Mode.SRC_IN);
-        setTitle("Username");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -97,23 +100,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             menu.getItem(i).setVisible(false);
         }
         UserModel userModel = new UserModel();
-        userModel.roles = "2,1";
-        String[] parts = userModel.roles.split(",");
-        int min = Integer.parseInt(parts[0]);
+        userModel.roles = "3, 1";
+        String[] userParts = userModel.roles.split(",");
+        min = Integer.parseInt(userParts[0]);
         if (min == 4) {
             min = 1;
             isCourier = true;
         }
         MenuItem menuItem;
-        for (int i = 0; i < parts.length; i++) {
-            if (Integer.parseInt(parts[i].trim()) == 4) {
+        for (int i = 0; i < userParts.length; i++) {
+            if (Integer.parseInt(userParts[i].trim()) == 3)
+            {
+                isTechnician = false;
+            }
+            if (Integer.parseInt(userParts[i].trim()) == 4) {
                 isCourier = true;
                 menuItem = menu.getItem(0);
             } else {
-                menuItem = menu.getItem(Integer.parseInt(parts[i].trim()) - 1);
+                menuItem = menu.getItem(Integer.parseInt(userParts[i].trim()) - 1);
             }
-            if (Integer.parseInt(parts[i].trim()) < min) {
-                min = Integer.parseInt(parts[i].trim());
+            if (Integer.parseInt(userParts[i].trim()) < min) {
+                min = Integer.parseInt(userParts[i].trim());
             }
             menuItem.setVisible(true);
         }
@@ -168,8 +175,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                /*DeviceModel deviceModel = devicesList.get(position);
-                Intent intent = new Intent(mainActivity, QRCodeActivity.class);
+                DeviceModel deviceModel = devicesList.get(position);
+                /*Intent intent = new Intent(mainActivity, QRCodeActivity.class);
                 intent.putExtra("serviceId", deviceModel.serviceId);
                 if (!isCourier)
                     intent.putExtra("nextToAction", deviceModel.nextToAction);
@@ -178,8 +185,54 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onLongClick(View view, int position) {
+            public void onLongClick(View view, final int position) {
+                if (!isTechnician) {
+                    final DeviceModel deviceModel = devicesList.get(position);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
+                    builder.setTitle("Confirm");
+                    builder.setMessage("Are you sure you want to delete the selected device?");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                String res = new Helper.Delete(rl, parts, "devices", deviceModel.Dev_id).execute().get();
+                                if (res.contains("true")) {
+                                    toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
+                                    toastMessage.setText("Deleted Successfully!");
+                                    toast.setView(toastMessage);
+                                    toast.show();
+                                    for (DeviceModel item : devicesList) {
+                                        if (item.Dev_id == deviceModel.Dev_id) {
+                                            devicesList.remove(item);
+                                            break;
+                                        }
+                                    }
+                                    menu.getItem(0).setTitle("Devices (" + devicesList.size() + ")");
+                                    technicianAdapter.notifyDataSetChanged();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            // Do nothing
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
             }
         }));
         menu.getItem(min - 1).setChecked(true);
@@ -187,6 +240,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (min == 1) {
             selectedId = menu.getItem(0).getItemId();
             getDevices();
+        }
+        else
+        {
+            if (selectedId == R.id.nav_statistics) {
+
+            } else if (selectedId == R.id.nav_insert) {
+                Intent intent = new Intent(this, InsertDeviceActivity.class);
+                intent.putExtra("min", min);
+                startActivityForResult(intent, 2);
+
+            }
         }
     }
 
@@ -261,12 +325,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             } else if (id == R.id.nav_statistics) {
 
             } else if (id == R.id.nav_insert) {
-
+                Intent intent = new Intent(this, InsertDeviceActivity.class);
+                intent.putExtra("min", min);
+                startActivityForResult(intent, 2);
             }
             else
             {
                 try {
-                    new Helper.Delete(progressBar, parts, "logout", -1).execute().get();
+                    new Helper.Delete(rl, parts, "logout", -1).execute().get();
                     SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString("access_token", "");
@@ -291,7 +357,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void getDevices()
     {
         try {
-            String json = new Helper.Get(progressBar, parts, "devices").execute().get();
+            String json = new Helper.Get(rl, parts, "devices").execute().get();
             currentDevices = gson.fromJson(json, DeviceModel[].class);
             devicesList = new ArrayList<>();
             for (DeviceModel itemModel : currentDevices) {
@@ -315,6 +381,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
+            if (resultCode == 2) {
+                int min = data.getIntExtra("min", -1);
+                if (min == 1)
+                    menu.getItem(2).setChecked(false);
+                    menu.getItem(0).setChecked(true);
+                    selectedId = menu.getItem(0).getItemId();
+                    getDevices();
+            }
             /*long serviceId = data.getLongExtra("serviceId", -1);
             for (DeviceModel item : devicesList) {
                 if (item.serviceId == serviceId) {
