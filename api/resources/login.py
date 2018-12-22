@@ -11,6 +11,8 @@ from werkzeug.security import safe_str_cmp
 from app import db, jwt
 from models import models
 
+import datetime
+
 class LoginAPI(Resource):
 
     def __init__(self):
@@ -27,7 +29,9 @@ class LoginAPI(Resource):
         print(args)
         if user and safe_str_cmp(user.Emp_Password, args['password']):
             # when authenticated, return a fresh access token and a refresh token
-            access_token = create_access_token(identity=user.Emp_id, fresh=True)
+            expires = datetime.timedelta(days=365)
+            access_token = create_access_token(
+                identity=user.Emp_id, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.Emp_id)
             return {
                 'message':'user_authenticated',

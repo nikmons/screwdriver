@@ -157,7 +157,6 @@ class Issues (db.Model):
      Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
      Stat_id = Column(Integer, ForeignKey("State.Stat_id"))  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
-     Act_id = Column(Integer, ForeignKey("Action.Act_id")) #10
      Issue_Created = Column(DateTime)
      Issue_Closed = Column(Date)
 #______________________R  E  D________________________________________>

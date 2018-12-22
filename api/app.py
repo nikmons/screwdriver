@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 load_dotenv(verbose=True)
 
 app = Flask(__name__, static_url_path="")
+app.secret_key = os.getenv("FLASK_SECRET_KEY") # Load from env var
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["ENVIRONMENT"] = os.getenv("ENV")
@@ -24,7 +25,6 @@ app.config["SWAGGER"] = {"title":"Swagger JWT Authentication App", "uiversion":3
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['PROPAGATE_EXCEPTIONS'] = True
-app.secret_key = "secret-key" # TODO: handle secret key
 
 swagger_template={
         "openapi": "2.0.0",
@@ -67,6 +67,8 @@ from resources.customer_list import CustomerListAPI
 from resources.customer import CustomerAPI
 from resources.login import LoginAPI
 from resources.logout import LogoutAPI
+from resources.problems_list import ProblemListAPI
+from resources.states_list import StatesListAPI
 
 import models
 
@@ -84,6 +86,8 @@ api.add_resource(CustomerListAPI, '/todo/api/v1.0/customers', endpoint='customer
 api.add_resource(CustomerAPI, '/todo/api/v1.0/customers/<int:id>', endpoint='customer')
 api.add_resource(EmployeeListAPI, '/todo/api/v1.0/employees', endpoint='employees')
 api.add_resource(EmployeeAPI, '/todo/api/v1.0/employees/<int:id>', endpoint='employee')
+api.add_resource(ProblemListAPI, '/todo/api/v1.0/problems', endpoint='problems')
+api.add_resource(StatesListAPI, '/todo/api/v1.0/states', endpoint='states')
 
 if __name__ == '__main__':
     app.run(debug=True)

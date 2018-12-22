@@ -1,0 +1,27 @@
+Endpoint to add Problems
+---
+tags:
+  - Problems
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Problem object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/Problem"
+responses:
+  200:
+    description: A list of Problems
+definitions:
+  Problem:
+    type: "object"
+    properties:
+      Prob_Name:
+        type: "string"
+      Prob_Desc:
+        type: "string"
