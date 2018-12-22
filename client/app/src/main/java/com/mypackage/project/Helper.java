@@ -10,6 +10,7 @@ import android.util.Base64;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 
@@ -35,18 +36,25 @@ public class Helper {
 
     public static class Get extends AsyncTask<String, Void, String> {
 
-        private ProgressBar progressBar;
+        private RelativeLayout rl;
         private String prefix;
         private String[] parts;
 
-        public Get(ProgressBar progressBar, String[] parts, String prefix) {
-            this.progressBar = progressBar;
+        public Get(RelativeLayout rl, String[] parts, String prefix) {
+            this.rl = rl;
             this.prefix = prefix;
             this.parts = parts;
         }
 
         protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
+            final int childCount = rl.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View v = rl.getChildAt(i);
+                if (v.getId() == R.id.progressBar)
+                    v.setVisibility(View.VISIBLE);
+                else
+                    v.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
@@ -80,26 +88,40 @@ public class Helper {
 
         @Override
         protected void onPostExecute(String result) {
-            progressBar.setVisibility(View.INVISIBLE);
+            final int childCount = rl.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View v = rl.getChildAt(i);
+                if (v.getId() == R.id.progressBar)
+                    v.setVisibility(View.INVISIBLE);
+                else
+                  v.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     public static class Post extends AsyncTask<String, Void, String> {
 
-        private ProgressBar progressBar;
+        private RelativeLayout rl;
         private Object obj;
         private String prefix;
         private String[] parts;
 
-        public Post(ProgressBar progressBar, String[] parts, String prefix, Object obj) {
-            this.progressBar = progressBar;
+        public Post(RelativeLayout rl, String[] parts, String prefix, Object obj) {
+            this.rl = rl;
             this.obj = obj;
             this.prefix = prefix;
             this.parts = parts;
         }
 
         protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
+            final int childCount = rl.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View v = rl.getChildAt(i);
+                if (v.getId() == R.id.progressBar)
+                    v.setVisibility(View.VISIBLE);
+                else
+                    v.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
@@ -125,27 +147,41 @@ public class Helper {
 
         @Override
         protected void onPostExecute(String result) {
-            progressBar.setVisibility(View.INVISIBLE);
+            final int childCount = rl.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View v = rl.getChildAt(i);
+                if (v.getId() == R.id.progressBar)
+                    v.setVisibility(View.INVISIBLE);
+                else
+                    v.setVisibility(View.VISIBLE);
+            }
 
         }
     }
 
     public static class Delete extends AsyncTask<String, Void, String> {
 
-        private ProgressBar progressBar;
+        private RelativeLayout rl;
         private int id;
         private String prefix;
         private String[] parts;
 
-        public Delete(ProgressBar progressBar, String[] parts, String prefix, int id) {
-            this.progressBar = progressBar;
+        public Delete(RelativeLayout rl, String[] parts, String prefix, int id) {
+            this.rl = rl;
             this.id = id;
             this.prefix = prefix;
             this.parts = parts;
         }
 
         protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
+            final int childCount = rl.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View v = rl.getChildAt(i);
+                if (v.getId() == R.id.progressBar)
+                    v.setVisibility(View.VISIBLE);
+                else
+                    v.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
@@ -169,7 +205,14 @@ public class Helper {
 
         @Override
         protected void onPostExecute(String result) {
-            progressBar.setVisibility(View.INVISIBLE);
+            final int childCount = rl.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View v = rl.getChildAt(i);
+                if (v.getId() == R.id.progressBar)
+                    v.setVisibility(View.INVISIBLE);
+                else
+                    v.setVisibility(View.VISIBLE);
+            }
         }
     }
 
