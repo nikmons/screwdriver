@@ -12,11 +12,29 @@
             android:id="@+id/nav_statistics"
             android:icon="@drawable/ic_menu_statistics"
             android:title="Statistics" />
-        <item
-            android:id="@+id/nav_insert"
-            android:icon="@drawable/ic_menu_insert"
-            android:title="Insert" />
     </group>
+    <item android:title="Insert">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_insert_customer"
+                    android:icon="@drawable/ic_menu_insert_cust"
+                    android:title="New Customer" />
+                <item
+                    android:id="@+id/nav_insert_device"
+                    android:icon="@drawable/ic_menu_insert"
+                    android:title="New Device" />
+                <item
+                    android:id="@+id/nav_insert_problem"
+                    android:icon="@drawable/ic_menu_insert_probl"
+                    android:title="New Problem" />
+                <item
+                    android:id="@+id/nav_insert_state"
+                    android:icon="@drawable/ic_menu_insert_state"
+                    android:title="New Issue" />
+            </group>
+        </menu>
+    </item>
     <item android:title="">
         <menu>
             <group android:checkableBehavior="single">

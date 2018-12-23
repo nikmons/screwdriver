@@ -37,6 +37,24 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
+        <activity
+        android:name=".InsertProblemActivity"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme.NoActionBar">
+
+    </activity>
+        <activity
+            android:name=".InsertCustomerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity
+            android:name=".InsertIssueActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>

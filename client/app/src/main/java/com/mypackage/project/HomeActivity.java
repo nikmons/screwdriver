@@ -32,9 +32,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -48,7 +45,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerViewTechnicianAdapter technicianAdapter;
     private RecyclerViewCourierAdapter courierAdapter;
     private Menu menu;
-    private int selectedId, min;
+    private int selectedId;
     private boolean isCourier = false, isTechnician = true;
     private TextView toastMessage;
     private ProgressBar progressBar;
@@ -100,17 +97,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             menu.getItem(i).setVisible(false);
         }
         UserModel userModel = new UserModel();
-        userModel.roles = "3, 1";
+        userModel.roles = "3";
+        if (userModel.roles == "3") ;
+        userModel.roles = "3,1";
         String[] userParts = userModel.roles.split(",");
-        min = Integer.parseInt(userParts[0]);
+        int min = Integer.parseInt(userParts[0]);
         if (min == 4) {
             min = 1;
             isCourier = true;
         }
         MenuItem menuItem;
         for (int i = 0; i < userParts.length; i++) {
-            if (Integer.parseInt(userParts[i].trim()) == 3)
-            {
+            if (Integer.parseInt(userParts[i].trim()) == 3) {
                 isTechnician = false;
             }
             if (Integer.parseInt(userParts[i].trim()) == 4) {
@@ -240,17 +238,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (min == 1) {
             selectedId = menu.getItem(0).getItemId();
             getDevices();
-        }
-        else
-        {
-            if (selectedId == R.id.nav_statistics) {
+        } else {
 
-            } else if (selectedId == R.id.nav_insert) {
-                Intent intent = new Intent(this, InsertDeviceActivity.class);
-                intent.putExtra("min", min);
-                startActivityForResult(intent, 2);
-
-            }
         }
     }
 
@@ -278,35 +267,41 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.refresh) {
-            getDevices();
+            if (!Helper.isOnline(getApplicationContext())) {
+                toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
+                toastMessage.setText("No internet connection!");
+                toast.setView(toastMessage);
+                toast.show();
+            } else
+                getDevices();
         } else {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                alertDialogBuilder.setTitle("Confirmation");
-                alertDialogBuilder
-                        .setMessage("Are you sure you want to exit application?")
-                        .setCancelable(false)
-                        .setPositiveButton("Yes",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        if (Build.VERSION.SDK_INT >= 21) {
-                                            finishAndRemoveTask();
-                                        } else {
-                                            finish();
-                                        }
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Confirmation");
+            alertDialogBuilder
+                    .setMessage("Are you sure you want to exit application?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    if (Build.VERSION.SDK_INT >= 21) {
+                                        finishAndRemoveTask();
+                                    } else {
+                                        finish();
                                     }
-                                })
+                                }
+                            })
 
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
 
-                                dialog.cancel();
-                            }
-                        });
+                            dialog.cancel();
+                        }
+                    });
 
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-            }
-            return super.onOptionsItemSelected(item);
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -324,27 +319,40 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 recyclerView.setAdapter(technicianAdapter);
             } else if (id == R.id.nav_statistics) {
 
-            } else if (id == R.id.nav_insert) {
+            } else if (id == R.id.nav_insert_device) {
                 Intent intent = new Intent(this, InsertDeviceActivity.class);
-                intent.putExtra("min", min);
                 startActivityForResult(intent, 2);
-            }
-            else
-            {
-                try {
-                    new Helper.Delete(rl, parts, "logout", -1).execute().get();
-                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString("access_token", "");
-                    editor.putString("refresh_token", "");
-                    editor.commit();
-                    Intent intent = new Intent(this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+            } else if (id == R.id.nav_insert_problem) {
+                Intent intent = new Intent(this, InsertProblemActivity.class);
+                startActivityForResult(intent, 3);
+            } else if (id == R.id.nav_insert_customer) {
+                Intent intent = new Intent(this, InsertCustomerActivity.class);
+                startActivityForResult(intent, 3);
+            } else if (id == R.id.nav_insert_state) {
+                Intent intent = new Intent(this, InsertIssueActivity.class);
+                startActivityForResult(intent, 3);
+            } else {
+                if (!Helper.isOnline(getApplicationContext())) {
+                    toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
+                    toastMessage.setText("No internet connection!");
+                    toast.setView(toastMessage);
+                    toast.show();
+                } else {
+                    try {
+                        new Helper.Delete(rl, parts, "logout", -1).execute().get();
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString("access_token", "");
+                        editor.putString("refresh_token", "");
+                        editor.commit();
+                        Intent intent = new Intent(this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -354,8 +362,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void getDevices()
-    {
+    private void getDevices() {
         try {
             String json = new Helper.Get(rl, parts, "devices").execute().get();
             currentDevices = gson.fromJson(json, DeviceModel[].class);
@@ -381,13 +388,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
-            if (resultCode == 2) {
-                int min = data.getIntExtra("min", -1);
-                if (min == 1)
-                    menu.getItem(2).setChecked(false);
-                    menu.getItem(0).setChecked(true);
-                    selectedId = menu.getItem(0).getItemId();
+            if (resultCode == 2 || resultCode == 3) {
+                menu.getItem(0).setChecked(true);
+                selectedId = menu.getItem(0).getItemId();
+                if (resultCode == 2) {
                     getDevices();
+                }
             }
             /*long serviceId = data.getLongExtra("serviceId", -1);
             for (DeviceModel item : devicesList) {

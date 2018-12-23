@@ -20,10 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.concurrent.ExecutionException;
 
-public class InsertDeviceActivity extends AppCompatActivity {
+public class InsertProblemActivity extends AppCompatActivity {
     private TextView toastMessage;
     private Toast toast;
     private ProgressBar progressBar;
@@ -33,12 +32,12 @@ public class InsertDeviceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_insertdevice);
+        setContentView(R.layout.activity_insertproblem);
         getWindow().getDecorView().setBackgroundColor(Color.parseColor("#0193D7"));
         findViewById(android.R.id.content).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Helper.hideSoftKeyboard(InsertDeviceActivity.this);
+                Helper.hideSoftKeyboard(InsertProblemActivity.this);
                 return false;
             }
         });
@@ -54,24 +53,16 @@ public class InsertDeviceActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.getIndeterminateDrawable().setColorFilter(
                 getResources().getColor(R.color.colorPrimaryDark),
-                android.graphics.PorterDuff.Mode.SRC_IN);
-        TextView ident_codeLabel = new TextView(this);
-        final EditText ident_code = new EditText(this);
-        TextView manufLabel = new TextView(this);
-        final EditText manuf = new EditText(this);
-        TextView modelLabel = new TextView(this);
-        final EditText model = new EditText(this);
-        TextView modelYearLabel = new TextView(this);
-        final EditText modelyear = new EditText(this);
+                PorterDuff.Mode.SRC_IN);
+        TextView nameLabel = new TextView(this);
+        final EditText name = new EditText(this);
+        TextView descrLabel = new TextView(this);
+        final EditText descr = new EditText(this);
         Button submit = new Button(this);
-        rl.addView(ident_codeLabel);
-        rl.addView(ident_code);
-        rl.addView(manufLabel);
-        rl.addView(manuf);
-        rl.addView(modelLabel);
-        rl.addView(model);
-        rl.addView(modelYearLabel);
-        rl.addView(modelyear);
+        rl.addView(nameLabel);
+        rl.addView(name);
+        rl.addView(descr);
+        rl.addView(descrLabel);
         rl.addView(submit);
         RelativeLayout.LayoutParams relativeParams;
         toastMessage = new TextView(this);
@@ -82,64 +73,38 @@ public class InsertDeviceActivity extends AppCompatActivity {
         toast = Toast.makeText(getApplicationContext(), null,
                 Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
-        relativeParams = (RelativeLayout.LayoutParams) ident_codeLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 5 / 100, 0, 0);
+        relativeParams = (RelativeLayout.LayoutParams) nameLabel.getLayoutParams();
+        relativeParams.setMargins(w * 25 / 100, h * 25 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         relativeParams.height = h * 10 / 100;
-        ident_codeLabel.setLayoutParams(relativeParams);
-        ident_codeLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
-        ident_codeLabel.setText("Identifier Code:");
+        nameLabel.setLayoutParams(relativeParams);
+        nameLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+        nameLabel.setText("Name:");
 
-        relativeParams = (RelativeLayout.LayoutParams) ident_code.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 8 / 100, 0, 0);
+        relativeParams = (RelativeLayout.LayoutParams) name.getLayoutParams();
+        relativeParams.setMargins(w * 25 / 100, h * 28 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
-        ident_code.setLayoutParams(relativeParams);
-        ident_code.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
+        name.setLayoutParams(relativeParams);
+        name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
-        relativeParams = (RelativeLayout.LayoutParams) manufLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 20 / 100, 0, 0);
-        relativeParams.width = w * 50 / 100;
-        relativeParams.height = h * 10 / 100;
-        manufLabel.setLayoutParams(relativeParams);
-        manufLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
-        manufLabel.setText("Manufacturer:");
-
-        relativeParams = (RelativeLayout.LayoutParams) manuf.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 23 / 100, 0, 0);
-        relativeParams.width = w * 50 / 100;
-        manuf.setLayoutParams(relativeParams);
-        manuf.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
-
-        relativeParams = (RelativeLayout.LayoutParams) modelLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 35 / 100, 0, 0);
+        relativeParams = (RelativeLayout.LayoutParams) descrLabel.getLayoutParams();
+        relativeParams.setMargins(w * 25 / 100, h * 40 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         relativeParams.height = h * 10 / 100;
-        modelLabel.setLayoutParams(relativeParams);
-        modelLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
-        modelLabel.setText("Model:");
+        descrLabel.setLayoutParams(relativeParams);
+        descrLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+        descrLabel.setText("Description:");
 
-        relativeParams = (RelativeLayout.LayoutParams) model.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 38 / 100, 0, 0);
+        relativeParams = (RelativeLayout.LayoutParams) descr.getLayoutParams();
+        relativeParams.setMargins(w * 25 / 100, h * 43 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
-        model.setLayoutParams(relativeParams);
-        model.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
+        descr.setLayoutParams(relativeParams);
+        descr.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
-        relativeParams = (RelativeLayout.LayoutParams) modelYearLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 50 / 100, 0, 0);
-        relativeParams.width = w * 50 / 100;
-        relativeParams.height = h * 10 / 100;
-        modelYearLabel.setLayoutParams(relativeParams);
-        modelYearLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
-        modelYearLabel.setText("Model Year:");
 
-        relativeParams = (RelativeLayout.LayoutParams) modelyear.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 53 / 100, 0, 0);
-        relativeParams.width = w * 50 / 100;
-        modelyear.setLayoutParams(relativeParams);
-        modelyear.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
         relativeParams = (RelativeLayout.LayoutParams) submit.getLayoutParams();
-        relativeParams.setMargins(w * 37 / 100, h * 65 / 100, 0, 0);
+        relativeParams.setMargins(w * 37 / 100, h * 55 / 100, 0, 0);
         relativeParams.width = w * 28 / 100;
         relativeParams.height = h * 7 / 100;
         submit.setLayoutParams(relativeParams);
@@ -156,23 +121,19 @@ public class InsertDeviceActivity extends AppCompatActivity {
                     toast.setView(toastMessage);
                     toast.show();
                 } else {
-                    DeviceModel devModel = new DeviceModel();
-                    devModel.Dev_Identifier_Code = ident_code.getText().toString();
-                    devModel.Dev_Manufacturer = manuf.getText().toString();
-                    devModel.Dev_Model = model.getText().toString();
-                    devModel.Dev_Model_Year = modelyear.getText().toString();
+                    ProblemModel model = new ProblemModel();
+                    model.Prob_Name = name.getText().toString();
+                    model.Prob_Desc = descr.getText().toString();
                     try {
-                        String res = new Helper.Post(rl, parts, "devices", devModel).execute().get();
+                        String res = new Helper.Post(rl, parts, "problems", model).execute().get();
                         if (res.contains("null"))
                         {
                             toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
                             toastMessage.setText("Inserted Successfully!");
                             toast.setView(toastMessage);
                             toast.show();
-                            ident_code.setText("");
-                            manuf.setText("");
-                            model.setText("");
-                            modelyear.setText("");
+                            name.setText("");
+                            descr.setText("");
                         }
                         else
                         {
@@ -194,7 +155,7 @@ public class InsertDeviceActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent2 = new Intent();
-        setResult(2, intent2);
+        setResult(3, intent2);
         finish();
     }
 }

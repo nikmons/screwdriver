@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
         mainActivity = this;
         Helper helper = new Helper();
         String[] parts = helper.getPrefs(this);
-        /*if (parts[0] != null && parts[0].length() > 0)
+        if (parts[0] != null && parts[0].length() > 0)
         {
             Intent intent = new Intent(mainActivity, HomeActivity.class);
             startActivity(intent);
             finish();
-        }*/
+        }
         final RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl) ;
         user = (EditText) findViewById(R.id.user);
         pass = (EditText) findViewById(R.id.pass);
