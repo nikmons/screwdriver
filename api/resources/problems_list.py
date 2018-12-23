@@ -7,8 +7,9 @@ from app import db
 from models import models
 
 problem_fields = {
+    'Prob_id': fields.Integer,
     'Prob_Name': fields.String,
-    'Prob_Desc': fields.String,
+    'Prob_Desc': fields.String
 }
 
 class ProblemListAPI(Resource):
