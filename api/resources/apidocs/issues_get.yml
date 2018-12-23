@@ -1,0 +1,7 @@
+Endpoint returning a list of Issue
+---
+tags:
+  - Issues
+responses:
+  200:
+    description: A list of Issues

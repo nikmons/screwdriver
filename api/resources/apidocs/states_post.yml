@@ -1,0 +1,22 @@
+Endpoint to add States
+---
+tags:
+  - States
+parameters:
+  - in: "body"
+    name: "body"
+    description: "State object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/State"
+responses:
+  200:
+    description: A list of States
+definitions:
+  State:
+    type: "object"
+    properties:
+      Stat_Name:
+        type: "string"
+      Stat_Desc:
+        type: "string"

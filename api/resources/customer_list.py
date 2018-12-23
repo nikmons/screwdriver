@@ -22,22 +22,20 @@ class CustomerListAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('Cust_Created', type=str, default="",
-                                   location='json')
         self.reqparse.add_argument('Cust_First_Name', type=str, default="",
                                     location='json')
         self.reqparse.add_argument('Cust_Last_Name', type=str, default="",
                                    location='json')
         self.reqparse.add_argument('Cust_Address_Name', type=str, default="",
                                    location='json')
-        self.reqparse.add_argument('Cust_Email', type=int, default=0,
+        self.reqparse.add_argument('Cust_Email', type=str, default=0,
                                    location='json')
         self.reqparse.add_argument('Cust_Contact_Num', type=str, default=0,
                                    location='json')
         self.reqparse.add_argument('Cust_Contact_Num_2', type=str, default=0,
                                    location='json')
-        self.reqparse.add_argument('Cust_Birth_Date', type=int, default=0,
-                                   location='json')
+        # self.reqparse.add_argument('Cust_Birth_Date', type=str, default=0,
+        #                            location='json')
 
         super(CustomerListAPI, self).__init__()
 
@@ -53,9 +51,9 @@ class CustomerListAPI(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         print(args)
-        customer = models.Devices(Cust_Created=args["Cust_Created"],Cust_First_Name=args["Cust_First_Name"],
+        customer = models.Customers(Cust_First_Name=args["Cust_First_Name"],
                                     Cust_Last_Name=args["Cust_Last_Name"], Cust_Address_Name=args["Cust_Address_Name"],
                                     Cust_Email=args["Cust_Email"], Cust_Contact_Num=args["Cust_Contact_Num"],
-                                    Cust_Contact_Num_2=args["Cust_Contact_Num_2"], Cust_Birth_Date=args["Cust_Birth_Date"])
+                                    Cust_Contact_Num_2=args["Cust_Contact_Num_2"])
         db.session.add(customer)
         db.session.commit()

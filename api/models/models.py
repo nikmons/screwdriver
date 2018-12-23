@@ -85,14 +85,14 @@ class Devices (db.Model):
 class Customers (db.Model):
     __tablename__ = 'Customers'
     Cust_id = Column(Integer, primary_key = True)
-    Cust_Created = Column(DateTime)
+    Cust_Created = Column(DateTime, default=datetime.datetime.utcnow)
     Cust_First_Name = Column(String)
     Cust_Last_Name = Column(String)
     Cust_Address_Name = Column(String) #Also Cust_Address_Num (nomizw einai to idio me na to grapsoume sto address name)
     Cust_Email = Column(String) #Den kserw pws leme oti mporei na einai null
     Cust_Contact_Num = Column(String) # Validate
     Cust_Contact_Num_2 = Column(String) # Validate
-    Cust_Birth_Date = Column(Date)
+    Cust_Birth_Date = Column(Date, default=datetime.datetime.utcnow)
     child_Issues = relationship('Issues') #6
 
 
@@ -124,7 +124,6 @@ class Action (db.Model):
     Act_Desc = Column(String)
     child_Action = relationship('Action') #8
     child_Act_Inv = relationship('Action_Inventory') #9
-    child_Issues = relationship('Issues') #10
     child_Issues = relationship('Issue_Timeline') #13
 
 class Problems (db.Model):
@@ -144,7 +143,7 @@ class State (db.Model):
 class Issue_Timeline (db.Model):
     __tablename__ = 'Issue_Timeline'
     Ist_id = Column(Integer, primary_key = True)
-    Issue_id = Column (Integer)
+    Issue_id = Column (Integer, ForeignKey("Issues.Issue_id"))
     Emp_id = Column (Integer, ForeignKey('Employees.Emp_id')) #4
     Act_id = Column (Integer, ForeignKey("Action.Act_id")) #13
     Ist_Created = Column (DateTime)
@@ -155,9 +154,9 @@ class Issues (db.Model):
      Issue_id = Column(Integer, primary_key = True)
      Dev_id = Column(Integer, ForeignKey("Devices.Dev_id")) #5
      Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
-     Stat_id = Column(Integer, ForeignKey("State.Stat_id"))  # ____12____ Mipws auto prepei na paei ston issue timeline?
+     Stat_id = Column(Integer, ForeignKey("State.Stat_id"), default=1)  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
-     Act_id = Column(Integer, ForeignKey("Action.Act_id")) #10
-     Issue_Created = Column(DateTime)
+     Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)
      Issue_Closed = Column(Date)
+     child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>

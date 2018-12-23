@@ -1,0 +1,24 @@
+Endpoint to add Issues
+---
+tags:
+  - Issues
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Issue object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/Issue"
+responses:
+  200:
+    description: A list of Issues
+definitions:
+  Issue:
+    type: "object"
+    properties:
+      Dev_id:
+        type: "integer"
+      Cust_id:
+        type: "integer"
+      Prob_id:
+        type: "integer"
