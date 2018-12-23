@@ -143,7 +143,7 @@ class State (db.Model):
 class Issue_Timeline (db.Model):
     __tablename__ = 'Issue_Timeline'
     Ist_id = Column(Integer, primary_key = True)
-    Issue_id = Column (Integer)
+    Issue_id = Column (Integer, ForeignKey("Issues.Issue_id"))
     Emp_id = Column (Integer, ForeignKey('Employees.Emp_id')) #4
     Act_id = Column (Integer, ForeignKey("Action.Act_id")) #13
     Ist_Created = Column (DateTime)
@@ -156,7 +156,7 @@ class Issues (db.Model):
      Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
      Stat_id = Column(Integer, ForeignKey("State.Stat_id"))  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
-     Issue_Created = Column(DateTime)
+     Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)
      Issue_Closed = Column(Date)
      child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>
