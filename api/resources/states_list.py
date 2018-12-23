@@ -35,6 +35,6 @@ class StatesListAPI(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         print(args)
-        state = models.State(Prob_Name=args["Stat_Name"], Prob_Desc=args["Stat_Desc"])
+        state = models.State(Stat_Name=args["Stat_Name"], Stat_Desc=args["Stat_Desc"])
         db.session.add(state)
         db.session.commit()
