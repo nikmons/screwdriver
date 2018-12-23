@@ -85,14 +85,14 @@ class Devices (db.Model):
 class Customers (db.Model):
     __tablename__ = 'Customers'
     Cust_id = Column(Integer, primary_key = True)
-    Cust_Created = Column(DateTime)
+    Cust_Created = Column(DateTime, default=datetime.datetime.utcnow)
     Cust_First_Name = Column(String)
     Cust_Last_Name = Column(String)
     Cust_Address_Name = Column(String) #Also Cust_Address_Num (nomizw einai to idio me na to grapsoume sto address name)
     Cust_Email = Column(String) #Den kserw pws leme oti mporei na einai null
     Cust_Contact_Num = Column(String) # Validate
     Cust_Contact_Num_2 = Column(String) # Validate
-    Cust_Birth_Date = Column(Date)
+    Cust_Birth_Date = Column(Date, default=datetime.datetime.utcnow)
     child_Issues = relationship('Issues') #6
 
 
@@ -154,7 +154,7 @@ class Issues (db.Model):
      Issue_id = Column(Integer, primary_key = True)
      Dev_id = Column(Integer, ForeignKey("Devices.Dev_id")) #5
      Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
-     Stat_id = Column(Integer, ForeignKey("State.Stat_id"))  # ____12____ Mipws auto prepei na paei ston issue timeline?
+     Stat_id = Column(Integer, ForeignKey("State.Stat_id"), default=1)  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
      Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)
      Issue_Closed = Column(Date)

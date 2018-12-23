@@ -30,10 +30,10 @@ definitions:
       Cust_Address_Name:
         type: "string"
       Cust_Email:
-        type: "integer"
+        type: "string"
       Cust_Contact_Num:
         type: "string"
       Cust_Contact_Num_2:
         type: "string"
-      Cust_Birth_Date:
-        type: "integer"
+      # Cust_Birth_Date:
+      #   type: "string"
