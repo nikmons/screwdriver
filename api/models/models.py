@@ -124,7 +124,6 @@ class Action (db.Model):
     Act_Desc = Column(String)
     child_Action = relationship('Action') #8
     child_Act_Inv = relationship('Action_Inventory') #9
-    child_Issues = relationship('Issues') #10
     child_Issues = relationship('Issue_Timeline') #13
 
 class Problems (db.Model):
@@ -159,4 +158,5 @@ class Issues (db.Model):
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
      Issue_Created = Column(DateTime)
      Issue_Closed = Column(Date)
+     child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>
