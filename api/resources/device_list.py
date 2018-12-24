@@ -27,7 +27,7 @@ class DeviceListAPI(Resource):
                                    location='json')
         self.reqparse.add_argument('Dev_Model_Year', type=str, default="",
                                    location='json')
-        self.reqparse.add_argument('Dev_Identifier_Code', type=int, default=0,
+        self.reqparse.add_argument('Dev_Identifier_Code', type=str, default="",
                                    location='json')
 
         super(DeviceListAPI, self).__init__()
