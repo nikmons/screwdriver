@@ -1,0 +1,18 @@
+Endpoint to delete a Role
+---
+tags:
+  - Roles
+# securityDefinitions:
+#   basicAuth:
+#     type: basic
+# security:
+#   - basicAuth: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the role to delete
+responses:
+  200:
+    description: Deleted ID

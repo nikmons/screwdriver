@@ -70,6 +70,8 @@ from resources.logout import LogoutAPI
 from resources.problems_list import ProblemListAPI
 from resources.states_list import StatesListAPI
 from resources.issue_list import IssueListAPI
+from resources.role import RoleAPI
+from resources.role import RoleListAPI
 
 import models
 
@@ -90,6 +92,8 @@ api.add_resource(EmployeeAPI, '/todo/api/v1.0/employees/<int:id>', endpoint='emp
 api.add_resource(ProblemListAPI, '/todo/api/v1.0/problems', endpoint='problems')
 api.add_resource(StatesListAPI, '/todo/api/v1.0/states', endpoint='states')
 api.add_resource(IssueListAPI, '/todo/api/v1.0/issues', endpoint='issues')
+api.add_resource(RoleAPI, '/todo/api/v1.0/role', endpoint='role')
+api.add_resource(RoleListAPI, '/todo/api/v1.0/roles', endpoint='roles')
 
 if __name__ == '__main__':
     app.run(debug=True)
