@@ -39,11 +39,14 @@ import java.util.concurrent.ExecutionException;
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public List<DeviceModel> devicesList = new ArrayList<>();
+    public List<CustomerModel> customersList = new ArrayList<>();
     private DeviceModel[] currentDevices;
+    private CustomerModel[] currentCustomers;
     private int h, w;
     private RecyclerView recyclerView;
     private RecyclerViewTechnicianAdapter technicianAdapter;
     private RecyclerViewCourierAdapter courierAdapter;
+    private RecyclerViewHelpDeskAdapter helpDeskAdapter;
     private Menu menu;
     private int selectedId;
     private boolean isCourier = false, isTechnician = true;
@@ -109,6 +112,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         MenuItem menuItem;
         for (int i = 0; i < userParts.length; i++) {
             if (Integer.parseInt(userParts[i].trim()) == 3) {
+                menuItem = menu.getItem(3);
+                menuItem.setVisible(true);
                 isTechnician = false;
             }
             if (Integer.parseInt(userParts[i].trim()) == 4) {
@@ -161,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             relativeParams.addRule(RelativeLayout.BELOW, R.id.searchView);
             courierAdapter = new RecyclerViewCourierAdapter(devicesList);
         } else {
-            technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
+                technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
         }
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -184,7 +189,55 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onLongClick(View view, final int position) {
-                if (!isTechnician) {
+                if (selectedId == R.id.nav_customers)
+                {
+                    final CustomerModel model = customersList.get(position);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
+                    builder.setTitle("Confirm");
+                    builder.setMessage("Are you sure you want to delete the selected customer?");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                String res = new Helper.Delete(rl, parts, "customers", model.Cust_id).execute().get();
+                                if (res.contains("true")) {
+                                    toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
+                                    toastMessage.setText("Deleted Successfully!");
+                                    toast.setView(toastMessage);
+                                    toast.show();
+                                    for (CustomerModel item : customersList) {
+                                        if (item.Cust_id == model.Cust_id) {
+                                            customersList.remove(item);
+                                            break;
+                                        }
+                                    }
+                                    menu.getItem(2).setTitle("Customers (" + customersList.size() + ")");
+                                    helpDeskAdapter.notifyDataSetChanged();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            // Do nothing
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+                else if (!isTechnician) {
                     final DeviceModel deviceModel = devicesList.get(position);
                     AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
                     builder.setTitle("Confirm");
@@ -238,8 +291,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (min == 1) {
             selectedId = menu.getItem(0).getItemId();
             getDevices();
-        } else {
-
+            if (!isTechnician)
+            {
+                getCustomers();
+            }
         }
     }
 
@@ -265,15 +320,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.refresh) {
             if (!Helper.isOnline(getApplicationContext())) {
                 toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
                 toastMessage.setText("No internet connection!");
                 toast.setView(toastMessage);
                 toast.show();
-            } else
+            } else {
                 getDevices();
+                if (!isTechnician)
+                {
+                    getCustomers();
+                    if (selectedId == R.id.nav_customers)
+                    {
+                        helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
+                        recyclerView.setAdapter(helpDeskAdapter);
+                    }
+                }
+            }
         } else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("Confirmation");
@@ -324,13 +389,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 startActivityForResult(intent, 2);
             } else if (id == R.id.nav_insert_problem) {
                 Intent intent = new Intent(this, InsertProblemActivity.class);
-                startActivityForResult(intent, 3);
+                startActivity(intent);
             } else if (id == R.id.nav_insert_customer) {
                 Intent intent = new Intent(this, InsertCustomerActivity.class);
                 startActivityForResult(intent, 3);
             } else if (id == R.id.nav_insert_state) {
                 Intent intent = new Intent(this, InsertIssueActivity.class);
-                startActivityForResult(intent, 3);
+                startActivity(intent);
+            } else if (id == R.id.nav_customers) {
+                helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
+                recyclerView.setAdapter(helpDeskAdapter);
             } else {
                 if (!Helper.isOnline(getApplicationContext())) {
                     toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
@@ -385,6 +453,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void getCustomers() {
+        try {
+            String json = new Helper.Get(rl, parts, "customers").execute().get();
+            currentCustomers = gson.fromJson(json, CustomerModel[].class);
+            customersList = new ArrayList<>();
+            for (CustomerModel itemModel : currentCustomers) {
+                customersList.add(itemModel);
+            }
+            menu.getItem(2).setTitle("Customers (" + currentCustomers.length + ")");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
@@ -393,6 +477,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 selectedId = menu.getItem(0).getItemId();
                 if (resultCode == 2) {
                     getDevices();
+                }
+                else {
+                    getCustomers();
                 }
             }
             /*long serviceId = data.getLongExtra("serviceId", -1);

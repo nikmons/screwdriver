@@ -226,11 +226,5 @@ public class InsertIssueActivity extends AppCompatActivity {
             }
         });
     }
-    @Override
-    public void onBackPressed() {
-        Intent intent2 = new Intent();
-        setResult(3, intent2);
-        finish();
-    }
 }
 

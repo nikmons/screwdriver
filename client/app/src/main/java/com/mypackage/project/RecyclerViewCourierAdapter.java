@@ -31,7 +31,7 @@ public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.devices_to_repair_list, parent, false);
+                .inflate(R.layout.recyclerviewstyle, parent, false);
 
         return new MyViewHolder(itemView);
     }
