@@ -1,0 +1,27 @@
+Endpoint returning a list of Roles assigned to an Employee
+---
+tags:
+  - Employee-Roles
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the employee
+  - in: "body"
+    name: "body"
+    description: "The id of the role to link"
+    required: true
+    schema:
+      $ref: "#/definitions/Link_Role"
+responses:
+  200:
+    description: A list of Employee-Roles
+definitions:
+  Link_Role:
+    type: "object"
+    required:
+    - "Role_id"
+    properties:
+      Role_id:
+        type: "integer"

@@ -13,7 +13,7 @@ class Roles(db.Model):
     Role_id = Column(Integer, primary_key = True)
     Role_Name = Column(String)
     Role_Description = Column(String)
-    child = relationship('Emp_Roles') #1
+    child_role = relationship('Emp_Roles', backref='emp_rol') #1
 
     def __repr__(self):
         return '<Role_id {}>'.format(self.Role_id)
@@ -31,9 +31,9 @@ class Employees(db.Model):
     Emp_Contact_Num2 = Column(String) # Validate
     Emp_Username = Column(String)
     Emp_Password = Column(String)
-    child_Emp_Roles = relationship('Emp_Roles') #2
-    child_Emp_logins = relationship('Employees_Logins') #3
-    child_Issue_Timeline = relationship('Issue_Timeline') #4
+    #child_Emp_Roles = relationship('Emp_Roles') #2
+    #child_Emp_logins = relationship('Employees_Logins') #3
+    #child_Issue_Timeline = relationship('Issue_Timeline') #4
 
     # TODO: Implement
     def is_authenticated(self):
@@ -55,6 +55,8 @@ class Emp_Roles(db.Model):
     Emp_Role_id = Column(Integer,primary_key = True)
     Emp_id = Column(Integer, ForeignKey('Employees.Emp_id')) #2
     Role_id = Column(Integer, ForeignKey('Roles.Role_id')) #1
+
+    master_role = relationship('Roles', backref='role_info', foreign_keys=[Role_id]) #1
 
 class Employees_Logins(db.Model):
     __tablename__ = 'Employees_logins'

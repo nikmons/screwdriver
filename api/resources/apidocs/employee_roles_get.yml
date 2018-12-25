@@ -1,0 +1,13 @@
+Endpoint returning a list of Roles assigned to an Employee
+---
+tags:
+  - Employee-Roles
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the employee
+responses:
+  200:
+    description: A list of Roles

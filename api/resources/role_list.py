@@ -10,7 +10,6 @@ role_fields = {
     'Role_id': fields.Integer,
     'Role_Name': fields.String,
     'Role_Description': fields.String,
-
 }
 
 class RoleListAPI(Resource):
