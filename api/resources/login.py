@@ -36,6 +36,7 @@ class LoginAPI(Resource):
             return {
                 'message':'user_authenticated',
                 'user':args['username'],
+                'user_id': user.Emp_id,
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }, 200
