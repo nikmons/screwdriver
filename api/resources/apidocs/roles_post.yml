@@ -1,0 +1,24 @@
+Endpoint to add Roles
+---
+tags:
+  - Roles
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Role object that will be added"
+    required: true
+    schema:
+      $ref: "#/definitions/Role"
+responses:
+  200:
+    description: A list of Roles
+definitions:
+  Role:
+    type: "object"
+    required:
+    - "Role_Name"
+    properties:
+      Role_Name:
+        type: "string"
+      Role_Description:
+        type: "string"
