@@ -15,11 +15,6 @@ class Roles(db.Model):
     Role_Description = Column(String)
     child = relationship('Emp_Roles') #1
 
-    def __init__(self, Role_id, Role_Name, Role_Description):
-        self.Role_id = Role_id
-        self.Role_Name = Role_Name
-        self.Role_Description = Role_Description
-
     def __repr__(self):
         return '<Role_id {}>'.format(self.Role_id)
 
