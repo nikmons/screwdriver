@@ -21,8 +21,8 @@ class EmployeeRolesAPI(Resource):
     def get(self, id):
         print("Get roles assigned to Emp = {}".format(id))
 
-        emp_roles = db.session.query(models.Emp_Roles)\
-            .filter(models.Emp_Roles.Emp_id == id)\
+        emp_roles = db.session.query(models.Emp_Roles)  \
+            .filter(models.Emp_Roles.Emp_id == id)      \
             .all()
 
         print(emp_roles)
@@ -41,13 +41,20 @@ class EmployeeRolesAPI(Resource):
 
     # Consider Device deletion side-effects!
     @jwt_required
-    @swag_from("apidocs/device_delete.yml")
+    @swag_from("apidocs/employee_roles_delete.yml")
     def delete(self, id):
-        print("Delete id = {}".format(id))
-        device = models.Devices.query.get(id)
-        print(device)
-        if device is None:
+        args = self.reqparse.parse_args()
+        print("Delete Role = {} From Emp = {}".format(args["Role_id"], id))
+
+        emp_role = db.session.query(models.Emp_Roles)               \
+            .filter(models.Emp_Roles.Emp_id == id)                  \
+            .filter(models.Emp_Roles.Role_id == args["Role_id"])    \
+            .first()
+        print(emp_role)
+
+        if emp_role is None:
             abort(404)
-        db.session.delete(device)
+        db.session.delete(emp_role)
         db.session.commit()
+
         return {'result': True}
