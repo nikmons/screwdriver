@@ -57,9 +57,15 @@ class EmployeeListAPI(Resource):
     @swag_from("apidocs/employees_post.yml")
     def post(self):
         current_user = get_jwt_identity()
-        print(current_user)
+        #print(current_user)
         args = self.reqparse.parse_args()
         print(args)
+
+        existing_user = models.Employees.query.filter_by(Emp_Username=args["Emp_Username"]).first()
+        print("Existing user = {}".format(existing_user))
+        if existing_user is not None:
+            return {"message" : "User '{}' already exists".format(args["Emp_Username"])}, 400
+
         employee = models.Employees(Emp_Created=None,Emp_First_Name=args["Emp_First_Name"],
                                     Emp_Last_Name=args["Emp_Last_Name"], Emp_Address_Name=args["Emp_Address_Name"],
                                     Emp_Address_Num=args["Emp_Address_Num"], Emp_Email=args["Emp_Email"],
