@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, abort, make_response, session
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flasgger import swag_from
+from utils.secure_creds import check_password
 
 from flask_jwt_extended import (
     create_access_token,
@@ -27,7 +28,7 @@ class LoginAPI(Resource):
         args = self.reqparse.parse_args()
         user =  models.Employees.query.filter_by(Emp_Username = str(args['username'])).first()
         print(args)
-        if user and safe_str_cmp(user.Emp_Password, args['password']):
+        if user and check_password(args['password'], user.Emp_Password):
             # when authenticated, return a fresh access token and a refresh token
             expires = datetime.timedelta(days=365)
             access_token = create_access_token(

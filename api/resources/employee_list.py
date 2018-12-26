@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
+from utils.secure_creds import get_hashed_password
 
 employee_fields = {
     'Emp_id': fields.Integer,
@@ -70,6 +71,6 @@ class EmployeeListAPI(Resource):
                                     Emp_Last_Name=args["Emp_Last_Name"], Emp_Address_Name=args["Emp_Address_Name"],
                                     Emp_Address_Num=args["Emp_Address_Num"], Emp_Email=args["Emp_Email"],
                                     Emp_Contact_Num=args["Emp_Contact_Num"], Emp_Contact_Num2=args["Emp_Contact_Num2"],
-                                    Emp_Username=args["Emp_Username"], Emp_Password=args["Emp_Password"])
+                                    Emp_Username=args["Emp_Username"], Emp_Password=get_hashed_password(args["Emp_Password"]))
         db.session.add(employee)
         db.session.commit()
