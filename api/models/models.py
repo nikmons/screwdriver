@@ -16,12 +16,12 @@ class Roles(db.Model):
     child_role = relationship('Emp_Roles', backref='emp_rol') #1
 
     def __repr__(self):
-        return '<Role_id {}>'.format(self.Role_id)
+        return '<Role_id {} - Name {}>'.format(self.Role_id, self.Role_Name)
 
 class Employees(db.Model):
     __tablename__ = 'Employees'
     Emp_id = Column(Integer, primary_key = True)
-    Emp_Created = Column(DateTime)
+    Emp_Created = Column(DateTime, default=datetime.datetime.utcnow)
     Emp_First_Name = Column(String)
     Emp_Last_Name = Column(String)
     Emp_Address_Name = Column(String)
@@ -62,7 +62,7 @@ class Employees_Logins(db.Model):
     __tablename__ = 'Employees_logins'
     Emp_Logins_id = Column(Integer, primary_key=True)
     Emp_id = Column(Integer, ForeignKey ("Employees.Emp_id")) #3
-    Emp_Logged_In = Column (Date) #timestamp
+    Emp_Logged_In = Column (Date, default=datetime.datetime.utcnow) #timestamp
     Emp_Logged_Out = Column (Date) #timestamp
 
 #_________________________B  L  U  E_________________________________>
@@ -143,7 +143,7 @@ class Issue_Timeline (db.Model):
     Issue_id = Column (Integer, ForeignKey("Issues.Issue_id"))
     Emp_id = Column (Integer, ForeignKey('Employees.Emp_id')) #4
     Act_id = Column (Integer, ForeignKey("Action.Act_id")) #13
-    Ist_Created = Column (DateTime)
+    Ist_Created = Column (DateTime, default=datetime.datetime.utcnow)
     Ist_Comment = Column (String)
 
 class Issues (db.Model):
