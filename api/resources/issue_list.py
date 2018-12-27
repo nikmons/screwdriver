@@ -15,7 +15,9 @@ issues_fields = {
     'Stat_id': fields.Integer,
     'Prob_id': fields.Integer, # Fix typo
     'Issue_Created': fields.DateTime,
-    'Issue_Closed': fields.DateTime
+    'Issue_Closed': fields.DateTime,
+    'Issue_Created_By': fields.Integer,
+    'Issue_Assigned_To': fields.Integer
 }
 
 class IssueListAPI(Resource):
@@ -45,7 +47,9 @@ class IssueListAPI(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         print(args)
-        issue = models.Issues(Dev_id=args["Dev_id"],
-                                    Cust_id=args["Cust_id"], Prob_id=args["Prob_id"])
+        issue = models.Issues(
+            Dev_id=args["Dev_id"],Cust_id=args["Cust_id"], Prob_id=args["Prob_id"],
+            Issue_Created_By=get_jwt_identity()
+            )
         db.session.add(issue)
         db.session.commit()

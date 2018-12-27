@@ -153,7 +153,10 @@ class Issues (db.Model):
      Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
      Stat_id = Column(Integer, ForeignKey("State.Stat_id"), default=1)  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
-     Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)
+     Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)     
      Issue_Closed = Column(Date)
+     Issue_Created_By = Column(Integer, ForeignKey("Employees.Emp_id"))
+     Issue_Assigned_To = Column(Integer, ForeignKey("Employees.Emp_id"))
+     
      child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>
