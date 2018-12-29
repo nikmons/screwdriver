@@ -13,20 +13,15 @@ class Roles(db.Model):
     Role_id = Column(Integer, primary_key = True)
     Role_Name = Column(String)
     Role_Description = Column(String)
-    child = relationship('Emp_Roles') #1
-
-    def __init__(self, Role_id, Role_Name, Role_Description):
-        self.Role_id = Role_id
-        self.Role_Name = Role_Name
-        self.Role_Description = Role_Description
+    child_role = relationship('Emp_Roles', backref='emp_rol') #1
 
     def __repr__(self):
-        return '<Role_id {}>'.format(self.Role_id)
+        return '<Role_id {} - Name {}>'.format(self.Role_id, self.Role_Name)
 
 class Employees(db.Model):
     __tablename__ = 'Employees'
     Emp_id = Column(Integer, primary_key = True)
-    Emp_Created = Column(DateTime)
+    Emp_Created = Column(DateTime, default=datetime.datetime.utcnow)
     Emp_First_Name = Column(String)
     Emp_Last_Name = Column(String)
     Emp_Address_Name = Column(String)
@@ -36,9 +31,9 @@ class Employees(db.Model):
     Emp_Contact_Num2 = Column(String) # Validate
     Emp_Username = Column(String)
     Emp_Password = Column(String)
-    child_Emp_Roles = relationship('Emp_Roles') #2
-    child_Emp_logins = relationship('Employees_Logins') #3
-    child_Issue_Timeline = relationship('Issue_Timeline') #4
+    #child_Emp_Roles = relationship('Emp_Roles') #2
+    #child_Emp_logins = relationship('Employees_Logins') #3
+    #child_Issue_Timeline = relationship('Issue_Timeline') #4
 
     # TODO: Implement
     def is_authenticated(self):
@@ -61,11 +56,13 @@ class Emp_Roles(db.Model):
     Emp_id = Column(Integer, ForeignKey('Employees.Emp_id')) #2
     Role_id = Column(Integer, ForeignKey('Roles.Role_id')) #1
 
+    master_role = relationship('Roles', backref='role_info', foreign_keys=[Role_id]) #1
+
 class Employees_Logins(db.Model):
     __tablename__ = 'Employees_logins'
     Emp_Logins_id = Column(Integer, primary_key=True)
     Emp_id = Column(Integer, ForeignKey ("Employees.Emp_id")) #3
-    Emp_Logged_In = Column (Date) #timestamp
+    Emp_Logged_In = Column (Date, default=datetime.datetime.utcnow) #timestamp
     Emp_Logged_Out = Column (Date) #timestamp
 
 #_________________________B  L  U  E_________________________________>
@@ -146,7 +143,7 @@ class Issue_Timeline (db.Model):
     Issue_id = Column (Integer, ForeignKey("Issues.Issue_id"))
     Emp_id = Column (Integer, ForeignKey('Employees.Emp_id')) #4
     Act_id = Column (Integer, ForeignKey("Action.Act_id")) #13
-    Ist_Created = Column (DateTime)
+    Ist_Created = Column (DateTime, default=datetime.datetime.utcnow)
     Ist_Comment = Column (String)
 
 class Issues (db.Model):
@@ -156,7 +153,10 @@ class Issues (db.Model):
      Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
      Stat_id = Column(Integer, ForeignKey("State.Stat_id"), default=1)  # ____12____ Mipws auto prepei na paei ston issue timeline?
      Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
-     Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)
+     Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)     
      Issue_Closed = Column(Date)
+     Issue_Created_By = Column(Integer, ForeignKey("Employees.Emp_id"))
+     Issue_Assigned_To = Column(Integer, ForeignKey("Employees.Emp_id"))
+     
      child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>
