@@ -242,10 +242,12 @@ public class Helper {
     }
 
     public String[] getPrefs(Context context) {
-        String[] parts = new String[2];
+        String[] parts = new String[4];
         SharedPreferences pref = context.getSharedPreferences("MyPref", 0);
         parts[0] = pref.getString("access_token", null);
         parts[1] = pref.getString("refresh_token", null);
+        parts[2] = pref.getString("user_id", null);
+        parts[3] = pref.getString("user", null);
         return parts;
     }
 }

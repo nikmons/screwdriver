@@ -83,7 +83,7 @@ public class InsertIssueActivity extends AppCompatActivity {
         List<String> problems = new ArrayList<String>();
         final List<Integer> problemsIds = new ArrayList<Integer>();
         for (CustomerModel item : customersModel) {
-            customers.add(item.Cust_First_Name + " " + item.Cust_Last_Name);
+            customers.add(item.Cust_First_Name + " " + item.Cust_Last_Name + " <" + item.Cust_Email + ">");
             customersIds.add(item.Cust_id);
         }
         for (DeviceModel item : devModel) {

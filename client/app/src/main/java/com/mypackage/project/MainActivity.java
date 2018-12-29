@@ -141,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = pref.edit();
                             editor.putString("access_token", json.getString("access_token"));
                             editor.putString("refresh_token", json.getString("refresh_token"));
+                            editor.putString("user_id", json.getString("user_id"));
+                            editor.putString("user", json.getString("user"));
                             editor.commit();
                             Intent intent = new Intent(mainActivity, HomeActivity.class);
                             startActivity(intent);

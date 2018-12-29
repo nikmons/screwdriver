@@ -72,6 +72,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         helper = new Helper();
         rl = (RelativeLayout) findViewById(R.id.rl);
         parts = helper.getPrefs(this);
+        setTitle(parts[3]);
         gson = new Gson();
         toastMessage = new TextView(this);
         toastMessage.setTextColor(Color.WHITE);
@@ -99,54 +100,63 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < menu.size() - 1; i++) {
             menu.getItem(i).setVisible(false);
         }
-        UserModel userModel = new UserModel();
-        userModel.roles = "3";
-        if (userModel.roles == "3") ;
-        userModel.roles = "3,1";
-        String[] userParts = userModel.roles.split(",");
-        int min = Integer.parseInt(userParts[0]);
-        if (min == 4) {
-            min = 1;
-            isCourier = true;
-        }
-        MenuItem menuItem;
-        for (int i = 0; i < userParts.length; i++) {
-            if (Integer.parseInt(userParts[i].trim()) == 3) {
-                menuItem = menu.getItem(3);
-                menuItem.setVisible(true);
-                isTechnician = false;
+        String json = null;
+        try {
+            json = new Helper.Get(rl, parts, "employees/" + Integer.parseInt(parts[2]) + "/roles").execute().get();
+            RoleModel[] roleModels = gson.fromJson(json, RoleModel[].class);
+            String roles = String.valueOf(roleModels[0].Role_id);
+            if (roleModels[0].Role_id == 3)
+                roles += ", 1";
+            for (int i = 1; i < roleModels.length; i++)
+            {
+                roles += ", " + String.valueOf(roleModels[i].Role_id);
+                if (roleModels[i].Role_id == 3)
+                    roles += ", 1";
             }
-            if (Integer.parseInt(userParts[i].trim()) == 4) {
+            String[] userParts = roles.split(",");
+            int min = Integer.parseInt(userParts[0]);
+            if (min == 4) {
+                min = 1;
                 isCourier = true;
-                menuItem = menu.getItem(0);
-            } else {
-                menuItem = menu.getItem(Integer.parseInt(userParts[i].trim()) - 1);
             }
-            if (Integer.parseInt(userParts[i].trim()) < min) {
-                min = Integer.parseInt(userParts[i].trim());
-            }
-            menuItem.setVisible(true);
-        }
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,
-                DividerItemDecoration.VERTICAL));
-        if (isCourier) {
-            RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
-            final SearchView searchView = new SearchView(this);
-            rl.addView(searchView);
-            searchView.setQueryHint("Tracking Number");
-            searchView.setId(R.id.searchView);
-            searchView.setIconifiedByDefault(false);
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
+            MenuItem menuItem;
+            for (int i = 0; i < userParts.length; i++) {
+                if (Integer.parseInt(userParts[i].trim()) == 3) {
+                    menuItem = menu.getItem(3);
+                    menuItem.setVisible(true);
+                    isTechnician = false;
                 }
+                if (Integer.parseInt(userParts[i].trim()) == 4) {
+                    isCourier = true;
+                    menuItem = menu.getItem(0);
+                } else {
+                    menuItem = menu.getItem(Integer.parseInt(userParts[i].trim()) - 1);
+                }
+                if (Integer.parseInt(userParts[i].trim()) < min) {
+                    min = Integer.parseInt(userParts[i].trim());
+                }
+                menuItem.setVisible(true);
+            }
+            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+            DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+            itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
+            recyclerView.addItemDecoration(new DividerItemDecoration(this,
+                    DividerItemDecoration.VERTICAL));
+            if (isCourier) {
+                RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
+                final SearchView searchView = new SearchView(this);
+                rl.addView(searchView);
+                searchView.setQueryHint("Tracking Number");
+                searchView.setId(R.id.searchView);
+                searchView.setIconifiedByDefault(false);
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
                     /*devicesList = new ArrayList<>();
                     for (DeviceModel itemModel : currentDevices) {
                         if (itemModel.trackingNumber.toLowerCase().startsWith(newText.toLowerCase()))
@@ -154,147 +164,149 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     }
                     courierAdapter = new RecyclerViewCourierAdapter(devicesList);
                     recyclerView.setAdapter(courierAdapter);*/
-                    return false;
-                }
-            });
-            RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) searchView.getLayoutParams();
-            relativeParams.setMargins(w * -2 / 100, h * 2 / 100, 0, h * 3 / 100);
-            relativeParams.height = h * 7 / 100;
-            relativeParams.width = w;
-            searchView.setLayoutParams(relativeParams);
-            relativeParams = (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
-            relativeParams.addRule(RelativeLayout.BELOW, R.id.searchView);
-            courierAdapter = new RecyclerViewCourierAdapter(devicesList);
-        } else {
+                        return false;
+                    }
+                });
+                RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams) searchView.getLayoutParams();
+                relativeParams.setMargins(w * -2 / 100, h * 2 / 100, 0, h * 3 / 100);
+                relativeParams.height = h * 7 / 100;
+                relativeParams.width = w;
+                searchView.setLayoutParams(relativeParams);
+                relativeParams = (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
+                relativeParams.addRule(RelativeLayout.BELOW, R.id.searchView);
+                courierAdapter = new RecyclerViewCourierAdapter(devicesList);
+            } else {
                 technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-        }
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        if (isCourier)
-            recyclerView.setAdapter(courierAdapter);
-        else
-            recyclerView.setAdapter(technicianAdapter);
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                DeviceModel deviceModel = devicesList.get(position);
+            }
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            if (isCourier)
+                recyclerView.setAdapter(courierAdapter);
+            else
+                recyclerView.setAdapter(technicianAdapter);
+            recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    DeviceModel deviceModel = devicesList.get(position);
                 /*Intent intent = new Intent(mainActivity, QRCodeActivity.class);
                 intent.putExtra("serviceId", deviceModel.serviceId);
                 if (!isCourier)
                     intent.putExtra("nextToAction", deviceModel.nextToAction);
                 intent.putExtra("isCourier", isCourier);
                 startActivityForResult(intent, 1);*/
-            }
-
-            @Override
-            public void onLongClick(View view, final int position) {
-                if (selectedId == R.id.nav_customers)
-                {
-                    final CustomerModel model = customersList.get(position);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
-                    builder.setTitle("Confirm");
-                    builder.setMessage("Are you sure you want to delete the selected customer?");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                String res = new Helper.Delete(rl, parts, "customers", model.Cust_id).execute().get();
-                                if (res.contains("true")) {
-                                    toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
-                                    toastMessage.setText("Deleted Successfully!");
-                                    toast.setView(toastMessage);
-                                    toast.show();
-                                    for (CustomerModel item : customersList) {
-                                        if (item.Cust_id == model.Cust_id) {
-                                            customersList.remove(item);
-                                            break;
-                                        }
-                                    }
-                                    menu.getItem(2).setTitle("Customers (" + customersList.size() + ")");
-                                    helpDeskAdapter.notifyDataSetChanged();
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            }
-                            dialog.dismiss();
-                        }
-                    });
-
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                            // Do nothing
-                            dialog.dismiss();
-                        }
-                    });
-
-                    AlertDialog alert = builder.create();
-                    alert.show();
                 }
-                else if (!isTechnician) {
-                    final DeviceModel deviceModel = devicesList.get(position);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
-                    builder.setTitle("Confirm");
-                    builder.setMessage("Are you sure you want to delete the selected device?");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                String res = new Helper.Delete(rl, parts, "devices", deviceModel.Dev_id).execute().get();
-                                if (res.contains("true")) {
-                                    toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
-                                    toastMessage.setText("Deleted Successfully!");
-                                    toast.setView(toastMessage);
-                                    toast.show();
-                                    for (DeviceModel item : devicesList) {
-                                        if (item.Dev_id == deviceModel.Dev_id) {
-                                            devicesList.remove(item);
-                                            break;
+                @Override
+                public void onLongClick(View view, final int position) {
+                    if (selectedId == R.id.nav_customers) {
+                        final CustomerModel model = customersList.get(position);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
+                        builder.setTitle("Confirm");
+                        builder.setMessage("Are you sure you want to delete the selected customer?");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    String res = new Helper.Delete(rl, parts, "customers", model.Cust_id).execute().get();
+                                    if (res.contains("true")) {
+                                        toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
+                                        toastMessage.setText("Deleted Successfully!");
+                                        toast.setView(toastMessage);
+                                        toast.show();
+                                        for (CustomerModel item : customersList) {
+                                            if (item.Cust_id == model.Cust_id) {
+                                                customersList.remove(item);
+                                                break;
+                                            }
                                         }
+                                        menu.getItem(2).setTitle("Customers (" + customersList.size() + ")");
+                                        helpDeskAdapter.notifyDataSetChanged();
                                     }
-                                    menu.getItem(0).setTitle("Devices (" + devicesList.size() + ")");
-                                    technicianAdapter.notifyDataSetChanged();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
+                                dialog.dismiss();
                             }
-                            dialog.dismiss();
-                        }
-                    });
+                        });
 
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
 
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                            // Do nothing
-                            dialog.dismiss();
-                        }
-                    });
+                                // Do nothing
+                                dialog.dismiss();
+                            }
+                        });
 
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    } else if (!isTechnician) {
+                        final DeviceModel deviceModel = devicesList.get(position);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
+                        builder.setTitle("Confirm");
+                        builder.setMessage("Are you sure you want to delete the selected device?");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    String res = new Helper.Delete(rl, parts, "devices", deviceModel.Dev_id).execute().get();
+                                    if (res.contains("true")) {
+                                        toastMessage.setBackgroundColor(Color.parseColor("#038E18"));
+                                        toastMessage.setText("Deleted Successfully!");
+                                        toast.setView(toastMessage);
+                                        toast.show();
+                                        for (DeviceModel item : devicesList) {
+                                            if (item.Dev_id == deviceModel.Dev_id) {
+                                                devicesList.remove(item);
+                                                break;
+                                            }
+                                        }
+                                        menu.getItem(0).setTitle("Devices (" + devicesList.size() + ")");
+                                        technicianAdapter.notifyDataSetChanged();
+                                    }
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                // Do nothing
+                                dialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                }
+            }));
+            menu.getItem(min - 1).setChecked(true);
+            selectedId = menu.getItem(min - 1).getItemId();
+            if (min == 1) {
+                selectedId = menu.getItem(0).getItemId();
+                getDevices();
+                if (!isTechnician) {
+                    getCustomers();
                 }
             }
-        }));
-        menu.getItem(min - 1).setChecked(true);
-        selectedId = menu.getItem(min - 1).getItemId();
-        if (min == 1) {
-            selectedId = menu.getItem(0).getItemId();
-            getDevices();
-            if (!isTechnician)
-            {
-                getCustomers();
-            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 
@@ -329,11 +341,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 toast.show();
             } else {
                 getDevices();
-                if (!isTechnician)
-                {
+                if (!isTechnician) {
                     getCustomers();
-                    if (selectedId == R.id.nav_customers)
-                    {
+                    if (selectedId == R.id.nav_customers) {
                         helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
                         recyclerView.setAdapter(helpDeskAdapter);
                     }
@@ -473,13 +483,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             if (resultCode == 2 || resultCode == 3) {
-                menu.getItem(0).setChecked(true);
-                selectedId = menu.getItem(0).getItemId();
                 if (resultCode == 2) {
+                    menu.getItem(0).setChecked(true);
+                    selectedId = menu.getItem(0).getItemId();
                     getDevices();
-                }
-                else {
+                    technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
+                    recyclerView.setAdapter(technicianAdapter);
+                } else {
+                    menu.getItem(2).setChecked(true);
+                    selectedId = menu.getItem(2).getItemId();
                     getCustomers();
+                    helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
+                    recyclerView.setAdapter(helpDeskAdapter);
                 }
             }
             /*long serviceId = data.getLongExtra("serviceId", -1);
