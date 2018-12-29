@@ -115,6 +115,7 @@ class Action_Inventory (db.Model):
 class Action (db.Model):
     __tablename__ = 'Action'
     Act_id = Column(Integer, primary_key = True)
+    #Act_id_from = Column(Integer, ForeignKey("Action.Act_id"))
     Act_id_to = Column(Integer, ForeignKey("Action.Act_id")) #8
     Act_Is_Final = Column(Boolean)
     Act_Name = Column(String)

@@ -73,6 +73,7 @@ from resources.issue_list import IssueListAPI
 from resources.role import RoleAPI
 from resources.role_list import RoleListAPI
 from resources.employee_roles import EmployeeRolesAPI
+from resources.user_issues_list import MyIssuesListAPI
 
 import models
 
@@ -90,6 +91,7 @@ api.add_resource(IssueListAPI, '/todo/api/v1.0/issues', endpoint='issues')
 api.add_resource(RoleListAPI, '/todo/api/v1.0/roles', endpoint='roles')
 api.add_resource(RoleAPI, '/todo/api/v1.0/roles/<int:id>', endpoint='role')
 api.add_resource(EmployeeRolesAPI, '/todo/api/v1.0/employees/<int:id>/roles', endpoint='employee_roles')
+api.add_resource(MyIssuesListAPI, '/todo/api/v1.0/myissues', endpoint='user_issues')
 
 if __name__ == '__main__':
     app.run(debug=True)
