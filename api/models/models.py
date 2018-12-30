@@ -115,14 +115,18 @@ class Action_Inventory (db.Model):
 class Action (db.Model):
     __tablename__ = 'Action'
     Act_id = Column(Integer, primary_key = True)
-    #Act_id_from = Column(Integer, ForeignKey("Action.Act_id"))
-    Act_id_to = Column(Integer, ForeignKey("Action.Act_id")) #8
     Act_Is_Final = Column(Boolean)
     Act_Name = Column(String)
     Act_Desc = Column(String)
     child_Action = relationship('Action') #8
     child_Act_Inv = relationship('Action_Inventory') #9
     child_Issues = relationship('Issue_Timeline') #13
+
+class Action_Stmdl(db.Model):
+    __tablename__ = "Action_State_Model"
+    Acst_id = Column(Integer, primary_key = True)
+    Act_id_from = Column(Integer)
+    Act_id_to = Column(Integer)
 
 class Problems (db.Model):
     __tablename__ = 'Problems'
@@ -159,7 +163,7 @@ class Issues (db.Model):
      Issue_Created_By = Column(Integer, ForeignKey("Employees.Emp_id"))
      Issue_Assigned_To = Column(Integer, ForeignKey("Employees.Emp_id"))
      Issue_Track_Num = Column(String)
-     Issue_Delivery_At = Column(String)
+     Issue_Delivery_At = Column(String)     
      
      child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>
