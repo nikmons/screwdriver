@@ -22,3 +22,8 @@ definitions:
         type: "integer"
       Prob_id:
         type: "integer"
+      Delivery_At:
+        type: string
+        enum:
+          - Store
+          - Home

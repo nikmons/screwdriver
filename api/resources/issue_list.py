@@ -17,7 +17,9 @@ issues_fields = {
     'Issue_Created': fields.DateTime,
     'Issue_Closed': fields.DateTime,
     'Issue_Created_By': fields.Integer,
-    'Issue_Assigned_To': fields.Integer
+    'Issue_Assigned_To': fields.Integer,
+    'Issue_Track_Num': fields.String,
+    'Issue_Delivery_At': fields.String
 }
 
 class IssueListAPI(Resource):
@@ -29,6 +31,8 @@ class IssueListAPI(Resource):
         self.reqparse.add_argument('Cust_id', type=int, default=0,
                                    location='json')
         self.reqparse.add_argument('Prob_id', type=int, default=0,
+                                   location='json')
+        self.reqparse.add_argument('Delivery_At', type=str, default="Store",
                                    location='json')
         # self.reqparse.add_argument('Emp_Id', type=int, default=0,
         #                            location='json')
@@ -49,7 +53,7 @@ class IssueListAPI(Resource):
         print(args)
         issue = models.Issues(
             Dev_id=args["Dev_id"],Cust_id=args["Cust_id"], Prob_id=args["Prob_id"],
-            Issue_Created_By=get_jwt_identity()
+            Issue_Created_By=get_jwt_identity(), Issue_Delivery_At=args["Delivery_At"]
             )
         db.session.add(issue)
         db.session.commit()

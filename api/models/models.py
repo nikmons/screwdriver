@@ -158,6 +158,8 @@ class Issues (db.Model):
      Issue_Closed = Column(Date)
      Issue_Created_By = Column(Integer, ForeignKey("Employees.Emp_id"))
      Issue_Assigned_To = Column(Integer, ForeignKey("Employees.Emp_id"))
+     Issue_Track_Num = Column(String)
+     Issue_Delivery_At = Column(String)
      
      child_Issues = relationship("Issue_Timeline")
 #______________________R  E  D________________________________________>

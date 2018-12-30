@@ -1,0 +1,13 @@
+Endpoint to update an Issue
+---
+tags:
+  - Issues
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the issue to update
+responses:
+  200:
+    description: Updated ID
