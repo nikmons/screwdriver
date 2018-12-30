@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, fields, marshal, marshal_with
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -19,7 +19,7 @@ issues_fields = {
     'Issue_Created_By': fields.Integer,
     'Issue_Assigned_To': fields.Integer,
     'Issue_Track_Num': fields.String,
-    'Issue_Delivery_At': fields.String
+    'Issue_Delivery_At': fields.String,
 }
 
 class IssueListAPI(Resource):
@@ -34,13 +34,10 @@ class IssueListAPI(Resource):
                                    location='json')
         self.reqparse.add_argument('Delivery_At', type=str, default="Store",
                                    location='json')
-        # self.reqparse.add_argument('Emp_Id', type=int, default=0,
-        #                            location='json')
-
         super(IssueListAPI, self).__init__()
 
     @jwt_required
-    @swag_from("apidocs/issues_get.yml")
+    @swag_from("apidocs/issues_get.yml"))
     def get(self):
         issues = models.Issues.query.all() #Query database
         print(issues)

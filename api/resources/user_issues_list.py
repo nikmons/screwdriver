@@ -17,7 +17,7 @@ issues_fields = {
     'Issue_Created': fields.DateTime,
     'Issue_Closed': fields.DateTime,
     'Issue_Created_By': fields.Integer,
-    'Issue_Assigned_To': fields.Integer
+    'Issue_Assigned_To': fields.Integer    
 }
 
 class MyIssuesListAPI(Resource):
@@ -30,17 +30,7 @@ class MyIssuesListAPI(Resource):
     def get(self):
         emp_id = get_jwt_identity()
         issues = models.Issues.query.filter_by(Issue_Assigned_To=emp_id) #Query database
-        print(issues)
-        return {'Issues': [marshal(issue, issues_fields) for issue in issues]}
-
-    # @jwt_required
-    # @swag_from("apidocs/issues_post.yml")
-    # def post(self):
-    #     args = self.reqparse.parse_args()
-    #     print(args)
-    #     issue = models.Issues(
-    #         Dev_id=args["Dev_id"],Cust_id=args["Cust_id"], Prob_id=args["Prob_id"],
-    #         Issue_Created_By=get_jwt_identity()
-    #         )
-    #     db.session.add(issue)
-    #     db.session.commit()
+        #print(issues)
+        issues_json = {'Issues': [marshal(issue, issues_fields) for issue in issues]}
+        print(issues_json)
+        return issues_json

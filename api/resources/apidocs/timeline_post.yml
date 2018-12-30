@@ -1,0 +1,29 @@
+Endpoint for adding Timeline Entries to Issues
+---
+tags:
+  - Issues
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the Issue
+  - in: "body"
+    name: "body"
+    description: "Timeline Entry data (Action Taken, Comment)"
+    required: true
+    schema:
+      $ref: "#/definitions/Timeline_Entry"
+responses:
+  200:
+    description: Timeline Entry successfully added
+definitions:
+  Timeline_Entry:
+    type: "object"
+    required:
+    - "Act_id"
+    properties:
+      Act_id:
+        type: "integer"
+      Ist_Comments:
+        type: "string"

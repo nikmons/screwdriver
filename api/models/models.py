@@ -118,7 +118,6 @@ class Action (db.Model):
     Act_Is_Final = Column(Boolean)
     Act_Name = Column(String)
     Act_Desc = Column(String)
-    child_Action = relationship('Action') #8
     child_Act_Inv = relationship('Action_Inventory') #9
     child_Issues = relationship('Issue_Timeline') #13
 
@@ -154,10 +153,10 @@ class Issue_Timeline (db.Model):
 class Issues (db.Model):
      __tablename__ = 'Issues'
      Issue_id = Column(Integer, primary_key = True)
-     Dev_id = Column(Integer, ForeignKey("Devices.Dev_id")) #5
-     Cust_id = Column(Integer, ForeignKey("Customers.Cust_id")) #6
-     Stat_id = Column(Integer, ForeignKey("State.Stat_id"), default=1)  # ____12____ Mipws auto prepei na paei ston issue timeline?
-     Prob_id = Column(Integer, ForeignKey("Problems.Prob_id")) #11
+     Dev_id = Column(Integer, ForeignKey("Devices.Dev_id"))
+     Cust_id = Column(Integer, ForeignKey("Customers.Cust_id"))
+     Stat_id = Column(Integer, ForeignKey("State.Stat_id"), default=1)
+     Prob_id = Column(Integer, ForeignKey("Problems.Prob_id"))
      Issue_Created = Column(DateTime, default=datetime.datetime.utcnow)     
      Issue_Closed = Column(Date)
      Issue_Created_By = Column(Integer, ForeignKey("Employees.Emp_id"))
@@ -166,4 +165,5 @@ class Issues (db.Model):
      Issue_Delivery_At = Column(String)     
      
      child_Issues = relationship("Issue_Timeline")
+     #emp_relationship = relationship("Employees")
 #______________________R  E  D________________________________________>

@@ -1,0 +1,13 @@
+Endpoint returning all Timeline Entries for an Issue
+---
+tags:
+  - Issues
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the Issue
+responses:
+  200:
+    description: A list of Timeline Entries
