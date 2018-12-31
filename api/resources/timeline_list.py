@@ -86,7 +86,7 @@ class IssueTimelineAPI(Resource):
             issue.Issue_Assigned_To = technician[0].Emp_id
         elif new_action.Act_Name == "Returned":
             print("Close it")
-            issue.Issue_Closed = datetime.datetime.utcnow
+            issue.Issue_Closed = datetime.datetime.utcnow()
             issue.Issue_Assigned_To = None
         print("+++++++++++++++")
         db.session.commit()
