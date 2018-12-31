@@ -124,8 +124,15 @@ class Action (db.Model):
 class Action_Stmdl(db.Model):
     __tablename__ = "Action_State_Model"
     Acst_id = Column(Integer, primary_key = True)
-    Act_id_from = Column(Integer)
-    Act_id_to = Column(Integer)
+    Act_id_from = Column(Integer, ForeignKey("Action.Act_id"))
+    Act_id_to = Column(Integer, ForeignKey("Action.Act_id"))
+    
+    transition_to = relationship('Action', backref='trans_to', foreign_keys=[Act_id_to]) #1
+
+    def __repr__(self):
+        return "<Transition From {} - To {}>".format(self.Act_id_from, self.Act_id_to)
+
+
 
 class Problems (db.Model):
     __tablename__ = 'Problems'
