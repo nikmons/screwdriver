@@ -73,10 +73,12 @@ class IssueTimelineAPI(Resource):
         elif new_action.Act_Name == "Undamaged" or new_action.Act_Name == "Unrepairable" or new_action.Act_Name == "Tested-Fixed":
             # Assign to Helpdesk
             print("Assign to Helpdesk")
-            helpdesk = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=3).all()]
-            issue.Issue_Assigned_To = helpdesk[0].Emp_id
-
-            # If assigned for Home delivery assign to Courrier   
+            if issue.Issue_Delivery_At == "Store":
+                helpdesk = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=3).all()]
+                issue.Issue_Assigned_To = helpdesk[0].Emp_id
+            elif issue.Issue_Delivery_At == "Home":
+                courrier = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=4).all()]
+                issue.Issue_Assigned_To = courrier[0].Emp_id
         elif new_action.Act_Name == "Tested-Unfixed":
             # Assign to Technician for recheck
             print("Assign to Technician")
@@ -87,5 +89,4 @@ class IssueTimelineAPI(Resource):
             issue.Issue_Closed = datetime.datetime.utcnow
             issue.Issue_Assigned_To = None
         print("+++++++++++++++")
-        #db.session.update(issue)
         db.session.commit()
