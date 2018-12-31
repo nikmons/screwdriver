@@ -25,5 +25,5 @@ definitions:
     properties:
       Act_id:
         type: "integer"
-      Ist_Comments:
+      Ist_Comment:
         type: "string"

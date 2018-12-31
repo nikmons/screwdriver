@@ -53,10 +53,11 @@ class Employees(db.Model):
 class Emp_Roles(db.Model):
     __tablename__ ='Emp_Roles'
     Emp_Role_id = Column(Integer,primary_key = True)
-    Emp_id = Column(Integer, ForeignKey('Employees.Emp_id')) #2
-    Role_id = Column(Integer, ForeignKey('Roles.Role_id')) #1
+    Emp_id = Column(Integer, ForeignKey('Employees.Emp_id'))
+    Role_id = Column(Integer, ForeignKey('Roles.Role_id'))
 
-    master_role = relationship('Roles', backref='role_info', foreign_keys=[Role_id]) #1
+    master_role = relationship('Roles', backref='role_info', foreign_keys=[Role_id])
+    master_employee = relationship('Employees', backref='emp_info', foreign_keys=[Emp_id])
 
 class Employees_Logins(db.Model):
     __tablename__ = 'Employees_logins'
@@ -118,6 +119,7 @@ class Action (db.Model):
     Act_Is_Final = Column(Boolean)
     Act_Name = Column(String)
     Act_Desc = Column(String)
+
     child_Act_Inv = relationship('Action_Inventory') #9
     child_Issues = relationship('Issue_Timeline') #13
 
@@ -126,8 +128,10 @@ class Action_Stmdl(db.Model):
     Acst_id = Column(Integer, primary_key = True)
     Act_id_from = Column(Integer, ForeignKey("Action.Act_id"))
     Act_id_to = Column(Integer, ForeignKey("Action.Act_id"))
+    #Act_role_change = Column(Integer, ForeignKey("Roles.Role_id"))
     
-    transition_to = relationship('Action', backref='trans_to', foreign_keys=[Act_id_to]) #1
+    transition_to = relationship('Action', backref='trans_to', foreign_keys=[Act_id_to])
+    transition_from = relationship('Action', backref='trans_from', foreign_keys=[Act_id_from])
 
     def __repr__(self):
         return "<Transition From {} - To {}>".format(self.Act_id_from, self.Act_id_to)
