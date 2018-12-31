@@ -41,5 +41,8 @@ class LoginAPI(Resource):
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }, 200
+            login_entry = models.Employees_Logins(Emp_id=user.Emp_id, Emp_Logged_In=datetime.datetime.utcnow())
+            db.session.add(login_entry)
+            db.session.commit()
 
         return {"message": "Invalid Credentials!"}, 401

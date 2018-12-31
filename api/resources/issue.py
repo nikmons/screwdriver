@@ -6,19 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from models import models
 
-issue_fields = {
-    'Issue_id': fields.Integer,
-    'Dev_id': fields.Integer,
-    'Cust_id': fields.Integer,
-    'Stat_id': fields.Integer,
-    'Prob_id': fields.Integer,
-    'Issue_Created': fields.DateTime,
-    'Issue_Closed': fields.DateTime,
-    'Issue_Created_By': fields.Integer,
-    'Issue_Assigned_To': fields.Integer,
-    'Issue_Track_Num': fields.String,
-    'Issue_Delivery_At': fields.String,
-}
+from resources.issue_list import issues_fields
 
 action_fields = {
     'Act_id' : fields.Integer,
@@ -36,6 +24,7 @@ class IssueAPI(Resource):
     @swag_from("apidocs/issue_put.yml")
     def put(self, id):
         print("Update id = {}".format(id))
+        # Change assignement
 
     @jwt_required
     @swag_from("apidocs/issue_get.yml")
@@ -47,7 +36,7 @@ class IssueAPI(Resource):
         print(av_actions)        
 
         print(issue)
-        resp = marshal(issue, issue_fields) #,200
+        resp = marshal(issue, issues_fields) #,200
         resp["Available_actions"] = [marshal(av_act.transition_to, action_fields) for av_act in av_actions]
         print(resp)
         return resp
