@@ -37,7 +37,7 @@ class IssueListAPI(Resource):
         super(IssueListAPI, self).__init__()
 
     @jwt_required
-    @swag_from("apidocs/issues_get.yml"))
+    @swag_from("apidocs/issues_get.yml")
     def get(self):
         issues = models.Issues.query.all() #Query database
         print(issues)
