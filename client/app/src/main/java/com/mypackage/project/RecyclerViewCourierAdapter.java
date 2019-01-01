@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerViewCourierAdapter.MyViewHolder> {
 
-    private List<DeviceModel> devicesList;
+    private List<CourierModel> modelList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView trackingNumber, name_surname, address;
@@ -24,8 +24,8 @@ public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
 
-    public RecyclerViewCourierAdapter(List<DeviceModel> devicesList) {
-        this.devicesList = devicesList;
+    public RecyclerViewCourierAdapter(List<CourierModel> modelList) {
+        this.modelList = modelList;
     }
 
     @Override
@@ -38,14 +38,14 @@ public class RecyclerViewCourierAdapter extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        DeviceModel deviceModel = devicesList.get(position);
-        /*holder.trackingNumber.setText(deviceModel.trackingNumber);
-        holder.name_surname.setText(deviceModel.name_surname);
-        holder.address.setText(deviceModel.address);*/
+        CourierModel model = modelList.get(position);
+        holder.trackingNumber.setText(model.trackingNumber);
+        holder.name_surname.setText(model.nameSurname);
+        holder.address.setText(model.address);
     }
 
     @Override
     public int getItemCount() {
-        return devicesList.size();
+        return modelList.size();
     }
 }
