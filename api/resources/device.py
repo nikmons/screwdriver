@@ -6,6 +6,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from models import models
 
+from resources.device_list import devices_fields
+
 class DeviceAPI(Resource):
 
     def __init__(self):
@@ -23,3 +25,13 @@ class DeviceAPI(Resource):
         db.session.delete(device)
         db.session.commit()
         return {'result': True}
+
+    @jwt_required
+    @swag_from("apidocs/device_get.yml")
+    def get(self, id):
+        print("Get id = {}".format(id))
+        device = models.Devices.query.filter_by(Dev_id=id).first()
+        print(device)        
+
+        resp = marshal(device, devices_fields) #,200
+        return resp, 200

@@ -1,0 +1,13 @@
+Endpoint to get a Device
+---
+tags:
+  - Devices
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the device to get
+responses:
+  200:
+    description: Device retrieved successfully
