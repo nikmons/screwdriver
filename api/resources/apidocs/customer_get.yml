@@ -1,0 +1,13 @@
+Endpoint to Get a Customer by ID
+---
+tags:
+  - Customers
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: The id of the customer to retrieve
+responses:
+  200:
+    description: Customer retrieved successfully
