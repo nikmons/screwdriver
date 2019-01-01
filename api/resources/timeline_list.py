@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flasgger import swag_from
@@ -45,11 +47,46 @@ class IssueTimelineAPI(Resource):
         print("Enter new Timeline Entry for Issue = {}".format(id))
         args = self.reqparse.parse_args()
         print(args)
-        timeline_entry = models.Issue_Timeline(Issue_id=id,       \
+
+        issue = models.Issues.query.filter_by(Issue_id=id).first()
+        if issue is None:
+            return {"message" : "Issue '{}' does not exist".format(id)}, 400
+
+        action_added = models.Action.query.filter_by(Act_id=args["Act_id"]).first()
+        if action_added is None:
+            return {"message" : "Action '{}' does not exist".format(args["Act_id"])}, 400
+
+        timeline_entry = models.Issue_Timeline(Issue_id=id,                         \
             Emp_id=emp_id, Act_id=args["Act_id"], Ist_Comment=args["Ist_Comment"])
+
+        self.__issue_transition(issue, action_added)
+
         db.session.add(timeline_entry)
         db.session.commit()
 
-        #Dont forget to change state!
-
-    
+    def __issue_transition(self, issue, new_action):
+        if new_action.Act_Name == "Fixed":
+            # Assign to QA
+            print("Assign to QA")
+            qa = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=5).all()]
+            issue.Issue_Assigned_To = qa[0].Emp_id
+        elif new_action.Act_Name == "Undamaged" or new_action.Act_Name == "Unrepairable" or new_action.Act_Name == "Tested-Fixed":
+            # Assign to Helpdesk
+            print("Assign to Helpdesk")
+            if issue.Issue_Delivery_At == "Store":
+                helpdesk = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=3).all()]
+                issue.Issue_Assigned_To = helpdesk[0].Emp_id
+            elif issue.Issue_Delivery_At == "Home":
+                courrier = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=4).all()]
+                issue.Issue_Assigned_To = courrier[0].Emp_id
+        elif new_action.Act_Name == "Tested-Unfixed":
+            # Assign to Technician for recheck
+            print("Assign to Technician")
+            technician = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=1).all()]
+            issue.Issue_Assigned_To = technician[0].Emp_id
+        elif new_action.Act_Name == "Returned":
+            print("Close it")
+            issue.Issue_Closed = datetime.datetime.utcnow()
+            issue.Issue_Assigned_To = None
+        print("+++++++++++++++")
+        db.session.commit()

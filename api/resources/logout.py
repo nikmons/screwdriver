@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from flask_jwt_extended import jwt_required, get_raw_jwt
+from flask_jwt_extended import jwt_required, get_raw_jwt, get_jwt_identity
 from flasgger import swag_from
 
 from app import db, blacklist
@@ -18,9 +18,9 @@ class LogoutAPI(Resource):
     def delete(self):
         jti = get_raw_jwt()["jti"]
         blacklist.add(jti)
-        return {"message": "Successfully logged out"}, 200
+        emp_id = get_jwt_identity()
 
-    @jwt_required
-    @swag_from("apidocs/logout_post.yml")
-    def post(self):
-        return "Old Logout - Does Nothing"
+        last_login_entry = models.Employees_Logins.query.filter_by(Emp_id=emp_id).first()
+        db.session.commit()
+
+        return {"message": "Successfully logged out"}, 200
