@@ -73,7 +73,7 @@ public class Helper {
                 while ((line = in.readLine()) != null) {
                     json = line;
                     int index = json.indexOf("[");
-                    if (index >= 0) {
+                    if (index >= 0 && index < 50) {
                         json = json.substring(index);
                         json = json.substring(0, json.length() - 1);
                     }

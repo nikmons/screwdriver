@@ -81,6 +81,10 @@ public class InsertIssueActivity extends AppCompatActivity {
         List<String> devices = new ArrayList<String>();
         final List<Integer> devicesIds = new ArrayList<Integer>();
         List<String> problems = new ArrayList<String>();
+        String[] deliver = {
+                "Store",
+                "Home"
+        };
         final List<Integer> problemsIds = new ArrayList<Integer>();
         for (CustomerModel item : customersModel) {
             customers.add(item.Cust_First_Name + " " + item.Cust_Last_Name + " <" + item.Cust_Email + ">");
@@ -118,6 +122,14 @@ public class InsertIssueActivity extends AppCompatActivity {
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
         problem.setAdapter(spinnerArrayAdapter);
+        TextView deliveryAtLabel = new TextView(this);
+        final Spinner deliveryAt = new Spinner(this);
+        spinnerArrayAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_spinner_item,
+                        deliver);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
+                .simple_spinner_dropdown_item);
+        deliveryAt.setAdapter(spinnerArrayAdapter);
         Button submit = new Button(this);
         rl.addView(customerLabel);
         rl.addView(customer);
@@ -125,6 +137,8 @@ public class InsertIssueActivity extends AppCompatActivity {
         rl.addView(deviceLabel);
         rl.addView(problem);
         rl.addView(problemLabel);
+        rl.addView(deliveryAt);
+        rl.addView(deliveryAtLabel);
         rl.addView(submit);
         RelativeLayout.LayoutParams relativeParams;
         toastMessage = new TextView(this);
@@ -136,7 +150,7 @@ public class InsertIssueActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
         relativeParams = (RelativeLayout.LayoutParams) customerLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h *  18/ 100, 0, 0);
+        relativeParams.setMargins(w * 25 / 100, h *  13/ 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         relativeParams.height = h * 10 / 100;
         customerLabel.setLayoutParams(relativeParams);
@@ -144,13 +158,13 @@ public class InsertIssueActivity extends AppCompatActivity {
         customerLabel.setText("Customer:");
 
         relativeParams = (RelativeLayout.LayoutParams) customer.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 23 / 100, 0, 0);
+        relativeParams.setMargins(w * 24 / 100, h * 18 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         customer.setLayoutParams(relativeParams);
         customer.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
         relativeParams = (RelativeLayout.LayoutParams) deviceLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 33 / 100, 0, 0);
+        relativeParams.setMargins(w * 25 / 100, h * 28 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         relativeParams.height = h * 10 / 100;
         deviceLabel.setLayoutParams(relativeParams);
@@ -158,14 +172,14 @@ public class InsertIssueActivity extends AppCompatActivity {
         deviceLabel.setText("Device:");
 
         relativeParams = (RelativeLayout.LayoutParams) device.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 38 / 100, 0, 0);
+        relativeParams.setMargins(w * 24 / 100, h * 33 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         device.setLayoutParams(relativeParams);
         device.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
 
         relativeParams = (RelativeLayout.LayoutParams) problemLabel.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 48 / 100, 0, 0);
+        relativeParams.setMargins(w * 25 / 100, h * 43 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         relativeParams.height = h * 10 / 100;
         problemLabel.setLayoutParams(relativeParams);
@@ -173,13 +187,27 @@ public class InsertIssueActivity extends AppCompatActivity {
         problemLabel.setText("Problem:");
 
         relativeParams = (RelativeLayout.LayoutParams) problem.getLayoutParams();
-        relativeParams.setMargins(w * 25 / 100, h * 53 / 100, 0, 0);
+        relativeParams.setMargins(w * 24 / 100, h * 48 / 100, 0, 0);
         relativeParams.width = w * 50 / 100;
         problem.setLayoutParams(relativeParams);
         problem.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
+        relativeParams = (RelativeLayout.LayoutParams) deliveryAtLabel.getLayoutParams();
+        relativeParams.setMargins(w * 25 / 100, h * 58 / 100, 0, 0);
+        relativeParams.width = w * 50 / 100;
+        relativeParams.height = h * 10 / 100;
+        deliveryAtLabel.setLayoutParams(relativeParams);
+        deliveryAtLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+        deliveryAtLabel.setText("Delivery At:");
+
+        relativeParams = (RelativeLayout.LayoutParams) deliveryAt.getLayoutParams();
+        relativeParams.setMargins(w * 24 / 100, h * 63 / 100, 0, 0);
+        relativeParams.width = w * 50 / 100;
+        deliveryAt.setLayoutParams(relativeParams);
+        deliveryAt.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
+
         relativeParams = (RelativeLayout.LayoutParams) submit.getLayoutParams();
-        relativeParams.setMargins(w * 37 / 100, h * 65 / 100, 0, 0);
+        relativeParams.setMargins(w * 37 / 100, h * 75 / 100, 0, 0);
         relativeParams.width = w * 28 / 100;
         relativeParams.height = h * 7 / 100;
         submit.setLayoutParams(relativeParams);
@@ -200,6 +228,7 @@ public class InsertIssueActivity extends AppCompatActivity {
                     model.Cust_id = customersIds.get(customer.getSelectedItemPosition());
                     model.Dev_id = devicesIds.get(device.getSelectedItemPosition());
                     model.Prob_id = problemsIds.get(problem.getSelectedItemPosition());
+                    model.Delivery_At = deliveryAt.getSelectedItem().toString();
                     try {
                         String res = new Helper.Post(rl, parts, "issues", model).execute().get();
                         if (res.contains("null"))

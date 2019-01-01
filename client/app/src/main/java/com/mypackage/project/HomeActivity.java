@@ -32,6 +32,10 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +44,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public List<DeviceModel> devicesList = new ArrayList<>();
     public List<CustomerModel> customersList = new ArrayList<>();
-    private DeviceModel[] currentDevices;
+    private List<DeviceModel> currentDevices = new ArrayList<>();
+    private List<Integer> issueIds = new ArrayList<>();
     private CustomerModel[] currentCustomers;
     private int h, w;
     private RecyclerView recyclerView;
@@ -107,8 +112,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             String roles = String.valueOf(roleModels[0].Role_id);
             if (roleModels[0].Role_id == 3)
                 roles += ", 1";
-            for (int i = 1; i < roleModels.length; i++)
-            {
+            for (int i = 1; i < roleModels.length; i++) {
                 roles += ", " + String.valueOf(roleModels[i].Role_id);
                 if (roleModels[i].Role_id == 3)
                     roles += ", 1";
@@ -188,13 +192,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    DeviceModel deviceModel = devicesList.get(position);
-                /*Intent intent = new Intent(mainActivity, QRCodeActivity.class);
-                intent.putExtra("serviceId", deviceModel.serviceId);
-                if (!isCourier)
-                    intent.putExtra("nextToAction", deviceModel.nextToAction);
-                intent.putExtra("isCourier", isCourier);
-                startActivityForResult(intent, 1);*/
+                    if (isTechnician) {
+                        Intent intent = new Intent(homeActivity, QRCodeActivity.class);
+                        intent.putExtra("issueId", issueIds.get(position));
+                        startActivityForResult(intent, 1);
+                    }
                 }
 
                 @Override
@@ -442,8 +444,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void getDevices() {
         try {
-            String json = new Helper.Get(rl, parts, "devices").execute().get();
-            currentDevices = gson.fromJson(json, DeviceModel[].class);
+            String res = new Helper.Get(rl, parts, "myissues").execute().get();
+            JSONArray jsonArray = new JSONArray(res);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = new JSONObject(jsonArray.get(i).toString());
+                issueIds.add(obj.getInt("Issue_id"));
+                String resDev = new Helper.Get(rl, parts, "devices/" + obj.getInt("Dev_id")).execute().get();
+                DeviceModel devModel = gson.fromJson(resDev, DeviceModel.class);
+                currentDevices.add(devModel);
+            }
             devicesList = new ArrayList<>();
             for (DeviceModel itemModel : currentDevices) {
                 devicesList.add(itemModel);
@@ -455,10 +464,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
                 recyclerView.setAdapter(technicianAdapter);
             }
-            menu.getItem(0).setTitle("Devices (" + currentDevices.length + ")");
+            menu.getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -482,13 +493,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
-            if (resultCode == 2 || resultCode == 3) {
+            if (resultCode == 1) {
+                getDevices();
+            } else if (resultCode == 2 || resultCode == 3) {
                 if (resultCode == 2) {
                     menu.getItem(0).setChecked(true);
                     selectedId = menu.getItem(0).getItemId();
                     getDevices();
-                    technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                    recyclerView.setAdapter(technicianAdapter);
                 } else {
                     menu.getItem(2).setChecked(true);
                     selectedId = menu.getItem(2).getItemId();
@@ -497,22 +508,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     recyclerView.setAdapter(helpDeskAdapter);
                 }
             }
-            /*long serviceId = data.getLongExtra("serviceId", -1);
-            for (DeviceModel item : devicesList) {
-                if (item.serviceId == serviceId) {
-                    devicesList.remove(item);
-                    if (selectedId == R.id.nav_current) {
-                        currentDevices.remove(item);
-                        break;
-                    }
-                }
-            }
-            if (isCourier) {
-                courierAdapter.notifyDataSetChanged();
-            } else {
-                technicianAdapter.notifyDataSetChanged();
-            }
-            updateDevicesMenuCounts();*/
         }
     }
 }
