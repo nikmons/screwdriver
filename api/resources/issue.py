@@ -31,7 +31,9 @@ class IssueAPI(Resource):
     def get(self, id):
         print("Get id = {}".format(id))
         issue = models.Issues.query.filter_by(Issue_id=id).first()
+        print(issue)
         last_act_id = models.Issue_Timeline.query.filter_by(Issue_id=id).order_by(models.Issue_Timeline.Ist_id.desc()).first().Act_id
+        print(last_act_id)
         av_actions = models.Action_Stmdl.query.filter_by(Act_id_from=last_act_id).all()
         print(av_actions)        
 
