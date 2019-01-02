@@ -42,8 +42,10 @@ import java.util.concurrent.ExecutionException;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public List<DeviceModel> devicesList = new ArrayList<>();
-    public List<CustomerModel> customersList = new ArrayList<>();
+    private List<DeviceModel> devicesList = new ArrayList<>();
+    private List<CourierModel> courierModelList = new ArrayList<>();
+    private List<CourierModel> currentCourierModelList = new ArrayList<>();
+    private List<CustomerModel> customersList = new ArrayList<>();
     private List<DeviceModel> currentDevices = new ArrayList<>();
     private List<Integer> issueIds = new ArrayList<>();
     private CustomerModel[] currentCustomers;
@@ -54,7 +56,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerViewHelpDeskAdapter helpDeskAdapter;
     private Menu menu;
     private int selectedId;
-    private boolean isCourier = false, isTechnician = true;
+    private boolean isCourier = false, isQA = false, isTechnician = true;
     private TextView toastMessage;
     private ProgressBar progressBar;
     private RelativeLayout rl;
@@ -119,9 +121,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
             String[] userParts = roles.split(",");
             int min = Integer.parseInt(userParts[0]);
-            if (min == 4) {
+            if (min == 4 || min == 5) {
                 min = 1;
-                isCourier = true;
+                if (min == 4)
+                    isCourier = true;
+                else
+                    isQA = true;
             }
             MenuItem menuItem;
             for (int i = 0; i < userParts.length; i++) {
@@ -130,8 +135,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     menuItem.setVisible(true);
                     isTechnician = false;
                 }
-                if (Integer.parseInt(userParts[i].trim()) == 4) {
-                    isCourier = true;
+                if (Integer.parseInt(userParts[i].trim()) == 4 || Integer.parseInt(userParts[i].trim()) == 5) {
+                    if (Integer.parseInt(userParts[i].trim()) == 4)
+                        isCourier = true;
+                    else
+                        isQA = true;
                     menuItem = menu.getItem(0);
                 } else {
                     menuItem = menu.getItem(Integer.parseInt(userParts[i].trim()) - 1);
@@ -161,13 +169,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                    /*devicesList = new ArrayList<>();
-                    for (DeviceModel itemModel : currentDevices) {
-                        if (itemModel.trackingNumber.toLowerCase().startsWith(newText.toLowerCase()))
-                            devicesList.add(itemModel);
-                    }
-                    courierAdapter = new RecyclerViewCourierAdapter(devicesList);
-                    recyclerView.setAdapter(courierAdapter);*/
+                        courierModelList = new ArrayList<>();
+                        for (CourierModel itemModel : currentCourierModelList) {
+                            if (itemModel.trackingNumber.toLowerCase().startsWith(newText.toLowerCase()))
+                                courierModelList.add(itemModel);
+                        }
+                        courierAdapter = new RecyclerViewCourierAdapter(courierModelList);
+                        recyclerView.setAdapter(courierAdapter);
+                        menu.getItem(0).setTitle("Devices (" + courierModelList.size() + ")");
                         return false;
                     }
                 });
@@ -178,7 +187,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 searchView.setLayoutParams(relativeParams);
                 relativeParams = (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
                 relativeParams.addRule(RelativeLayout.BELOW, R.id.searchView);
-                courierAdapter = new RecyclerViewCourierAdapter(devicesList);
+                courierAdapter = new RecyclerViewCourierAdapter(courierModelList);
             } else {
                 technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
             }
@@ -192,7 +201,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    if (isTechnician) {
+                    if (isTechnician || isCourier || isQA) {
                         Intent intent = new Intent(homeActivity, QRCodeActivity.class);
                         intent.putExtra("issueId", issueIds.get(position));
                         startActivityForResult(intent, 1);
@@ -247,7 +256,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                         AlertDialog alert = builder.create();
                         alert.show();
-                    } else if (!isTechnician) {
+                    } else if (!isTechnician && !isCourier && !isQA) {
                         final DeviceModel deviceModel = devicesList.get(position);
                         AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
                         builder.setTitle("Confirm");
@@ -300,8 +309,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             selectedId = menu.getItem(min - 1).getItemId();
             if (min == 1) {
                 selectedId = menu.getItem(0).getItemId();
-                getDevices();
-                if (!isTechnician) {
+                if (isCourier)
+                    getDevicesForCourier();
+                else
+                    getDevicesForTechnician();
+                if (!isTechnician && !isCourier) {
                     getCustomers();
                 }
             }
@@ -342,8 +354,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 toast.setView(toastMessage);
                 toast.show();
             } else {
-                getDevices();
-                if (!isTechnician) {
+                if (isCourier)
+                    getDevicesForCourier();
+                else
+                    getDevicesForTechnician();
+                if (!isTechnician && !isCourier) {
                     getCustomers();
                     if (selectedId == R.id.nav_customers) {
                         helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
@@ -442,28 +457,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void getDevices() {
+    private void getDevicesForTechnician() {
         try {
+            currentDevices = new ArrayList<>();
             String res = new Helper.Get(rl, parts, "myissues").execute().get();
             JSONArray jsonArray = new JSONArray(res);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = new JSONObject(jsonArray.get(i).toString());
                 issueIds.add(obj.getInt("Issue_id"));
-                String resDev = new Helper.Get(rl, parts, "devices/" + obj.getInt("Dev_id")).execute().get();
-                DeviceModel devModel = gson.fromJson(resDev, DeviceModel.class);
+                String result = new Helper.Get(rl, parts, "devices/" + obj.getInt("Dev_id")).execute().get();
+                DeviceModel devModel = gson.fromJson(result, DeviceModel.class);
                 currentDevices.add(devModel);
             }
             devicesList = new ArrayList<>();
             for (DeviceModel itemModel : currentDevices) {
                 devicesList.add(itemModel);
             }
-            if (isCourier) {
-                courierAdapter = new RecyclerViewCourierAdapter(devicesList);
-                recyclerView.setAdapter(courierAdapter);
-            } else {
-                technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
-                recyclerView.setAdapter(technicianAdapter);
-            }
+            technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
+            recyclerView.setAdapter(technicianAdapter);
             menu.getItem(0).setTitle("Devices (" + currentDevices.size() + ")");
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -473,6 +484,42 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
     }
+
+    private void getDevicesForCourier() {
+        try {
+            currentCourierModelList = new ArrayList<>();
+            String res = new Helper.Get(rl, parts, "myissues").execute().get();
+            JSONArray jsonArray = new JSONArray(res);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = new JSONObject(jsonArray.get(i).toString());
+                issueIds.add(obj.getInt("Issue_id"));
+                CourierModel model = new CourierModel();
+                String result = new Helper.Get(rl, parts, "customers/" + obj.getInt("Cust_id")).execute().get();
+                CustomerModel custModel = gson.fromJson(result, CustomerModel.class);
+                model.address = custModel.Cust_Address_Name;
+                model.nameSurname = custModel.Cust_First_Name + " " + custModel.Cust_Last_Name;
+
+                result = new Helper.Get(rl, parts, "issues/" + obj.getInt("Issue_id")).execute().get();
+                JSONObject objRes = new JSONObject(result);
+                model.trackingNumber = objRes.getString("Issue_Track_Num");
+                currentCourierModelList.add(model);
+            }
+            courierModelList = new ArrayList<>();
+            for (CourierModel itemModel : currentCourierModelList) {
+                courierModelList.add(itemModel);
+            }
+            courierAdapter = new RecyclerViewCourierAdapter(courierModelList);
+            recyclerView.setAdapter(courierAdapter);
+            menu.getItem(0).setTitle("Devices (" + currentCourierModelList.size() + ")");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void getCustomers() {
         try {
@@ -494,12 +541,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             if (resultCode == 1) {
-                getDevices();
+                if (isCourier)
+                    getDevicesForCourier();
+                else
+                    getDevicesForTechnician();
             } else if (resultCode == 2 || resultCode == 3) {
                 if (resultCode == 2) {
                     menu.getItem(0).setChecked(true);
                     selectedId = menu.getItem(0).getItemId();
-                    getDevices();
+                    getDevicesForTechnician();
                 } else {
                     menu.getItem(2).setChecked(true);
                     selectedId = menu.getItem(2).getItemId();
