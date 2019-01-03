@@ -47,7 +47,8 @@ class StatisticsAPI(Resource):
 
     def __td_to_std(self, td):
         # Days-Hours-Minutes
-        if td is None:
+        print(td)
+        if td[0] is None:
             return {"days":-1, "hours":-1, "minutes":-1}
         else:
             days = td[0].days 
