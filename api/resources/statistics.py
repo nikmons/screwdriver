@@ -47,10 +47,13 @@ class StatisticsAPI(Resource):
 
     def __td_to_std(self, td):
         # Days-Hours-Minutes
-        days = td[0].days 
-        hours = td[0].seconds//3600
-        minutes = (td[0].seconds//60)%60
-        return {"days" : days, "hours" : hours, "minutes" : minutes}
+        if td is None:
+            return {"days":-1, "hours":-1, "minutes":-1}
+        else:
+            days = td[0].days 
+            hours = td[0].seconds//3600
+            minutes = (td[0].seconds//60)%60
+            return {"days" : days, "hours" : hours, "minutes" : minutes}
 
     def __get_employees_by_role(self, role_id):
         emp_roles = models.Emp_Roles.query.filter(models.Emp_Roles.Role_id == role_id).all()
