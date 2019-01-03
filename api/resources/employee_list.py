@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -7,19 +7,7 @@ from app import db
 from models import models
 from utils.secure_creds import get_hashed_password
 
-employee_fields = {
-    'Emp_id': fields.Integer,
-    'Emp_Created': fields.DateTime,
-    'Emp_First_Name': fields.String,
-    'Emp_Last_Name': fields.String,
-    'Emp_Address_Name': fields.String,
-    'Emp_Address_Num': fields.Integer,
-    'Emp_Email': fields.String,
-    'Emp_Contact_Num': fields.Integer,
-    'Emp_Contact_Num2': fields.Integer,
-    'Emp_Username': fields.String,
-    'Emp_Password': fields.String
-}
+from resources.fields import employee_fields
 
 class EmployeeListAPI(Resource):
 

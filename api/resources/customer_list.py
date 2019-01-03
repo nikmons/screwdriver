@@ -1,22 +1,12 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
 
-customer_fields = {
-    'Cust_id': fields.Integer,
-    'Cust_Created': fields.DateTime,
-    'Cust_First_Name': fields.String,
-    'Cust_Last_Name': fields.String,
-    'Cust_Address_Name': fields.String,
-    'Cust_Email': fields.String,
-    'Cust_Contact_Num': fields.String,
-    'Cust_Contact_Num_2': fields.String,
-    'Cust_Birth_Date': fields.DateTime,
-}
+from resources.fields import customer_fields
 
 class CustomerListAPI(Resource):
 

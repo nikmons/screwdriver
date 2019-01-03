@@ -1,16 +1,12 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
 
-problem_fields = {
-    'Prob_id': fields.Integer,
-    'Prob_Name': fields.String,
-    'Prob_Desc': fields.String
-}
+from resources.fields import problem_fields
 
 class ProblemListAPI(Resource):
 

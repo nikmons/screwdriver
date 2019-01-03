@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -8,14 +8,7 @@ import datetime
 from app import db
 from models import models
 
-devices_fields = {
-    'Dev_id': fields.Integer,
-    'Dev_Created': fields.DateTime,
-    'Dev_Manufacturer': fields.String,
-    'Dev_Model': fields.String,
-    'Dev_Model_Year': fields.String,
-    'Dev_Identifier_Code': fields.String,
-}
+from resources.fields import devices_fields
 
 class DeviceListAPI(Resource):
 

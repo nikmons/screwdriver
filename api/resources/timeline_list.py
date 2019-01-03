@@ -1,20 +1,14 @@
 import datetime
 
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
 
-timeline_fields = {
-    'Issue_id': fields.Integer,
-    'Emp_id': fields.Integer,
-    'Act_id': fields.Integer,
-    'Ist_Comment': fields.String,
-    'Ist_Created': fields.DateTime
-}
+from resources.fields import timeline_fields
 
 class IssueTimelineAPI(Resource):
 

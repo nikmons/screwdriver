@@ -1,0 +1,49 @@
+Endpoint returning DB Statistics
+---
+tags:
+  - Statistics
+produces:
+  - application/json
+responses:
+  200:
+    description: statistics retrieved successfully
+    schema:
+      $ref: "#/definitions/Stats"
+definitions:
+  Stats:
+    type: "object"
+    properties:
+      total_issues:
+        type: "integer"
+      closed_issues:
+        type: "integer"
+      avg_issue_lifetime:
+        type:
+          "object"
+        properties:
+          days:
+            type: "integer"
+          hours:
+            type: "integer"
+          minutes:
+            type: "integer"
+      helpdesk_issues:
+        type: "integer"
+      technician_issues:
+        type: "integer"
+      qa_issues:
+        type: "integer"
+      courrier_issues:
+        type: "integer"
+      helpdesk_employees:
+        type: "integer"
+      technician_employees:
+        type: "integer"
+      qa_employees:
+        type: "integer"
+      courrier_employees:
+        type: "integer"
+      total_devices:
+        type: "integer"
+      total_customers:
+        type: "integer" 

@@ -77,6 +77,7 @@ from resources.user_issues_list import MyIssuesListAPI
 from resources.issue import IssueAPI
 from resources.timeline_list import IssueTimelineAPI
 from resources.issue_by_tracknum import IssueFindByTrackNumAPI
+from resources.statistics import StatisticsAPI
 
 import models
 
@@ -98,6 +99,7 @@ api.add_resource(MyIssuesListAPI, '/todo/api/v1.0/myissues', endpoint='user_issu
 api.add_resource(IssueAPI, '/todo/api/v1.0/issues/<int:id>', endpoint='issue')
 api.add_resource(IssueTimelineAPI, '/todo/api/v1.0/myissues/<int:id>/timeline', endpoint='issue_timeline')
 api.add_resource(IssueFindByTrackNumAPI, '/todo/api/v1.0/issues/findByTrackNum', endpoint='issue_bytracknum')
+api.add_resource(StatisticsAPI, '/todo/api/v1.0/statistics', endpoint='statistics')
 
 if __name__ == '__main__':
     app.run(debug=True)
