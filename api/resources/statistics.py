@@ -12,7 +12,7 @@ class StatisticsAPI(Resource):
     def __init__(self):
         super(StatisticsAPI, self).__init__()
 
-    #@jwt_required
+    @jwt_required
     @swag_from("apidocs/statistics_get.yml")
     def get(self):
         emps_helpdesk = self.__get_employees_by_role(3)
