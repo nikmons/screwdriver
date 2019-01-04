@@ -18,7 +18,7 @@ class IssueFindByTrackNumAPI(Resource):
         self.reqparse.add_argument("track_num_list", type=str, action="append")
         super(IssueFindByTrackNumAPI, self).__init__()
 
-    @jwt_required
+    #@jwt_required
     @swag_from("apidocs/issues_by_tracknum_get.yml")
     def get(self):
         args = self.reqparse.parse_args()

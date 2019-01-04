@@ -53,7 +53,7 @@ swagger = Swagger(app, template=swagger_template)#, template=swagger_template)
 api = Api(app)
 db =  SQLAlchemy(app)
 jwt = JWTManager(app)
-cors = CORS(app, resources={r"/todo/api/v1.0/statistics" : {"origins":"*"}})
+cors = CORS(app, resources={r"/todo/api/v1.0/issues/findByTrackNum" : {"origins":"*"}})
 
 blacklist = set()
 
