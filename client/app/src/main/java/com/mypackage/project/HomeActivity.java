@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -50,6 +52,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private List<Integer> issueIds = new ArrayList<>();
     private CustomerModel[] currentCustomers;
     private int h, w;
+    private TextView average, total_customers, total_devices, total_issues;
     private RecyclerView recyclerView;
     private RecyclerViewTechnicianAdapter technicianAdapter;
     private RecyclerViewCourierAdapter courierAdapter;
@@ -316,6 +319,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 if (!isTechnician && !isCourier) {
                     getCustomers();
                 }
+            } else if (min == 2) {
+                startStatisticsActivity();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -354,15 +359,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 toast.setView(toastMessage);
                 toast.show();
             } else {
-                if (isCourier)
-                    getDevicesForCourier();
-                else
-                    getDevicesForTechnician();
-                if (!isTechnician && !isCourier) {
-                    getCustomers();
-                    if (selectedId == R.id.nav_customers) {
-                        helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
-                        recyclerView.setAdapter(helpDeskAdapter);
+                if (selectedId == R.id.nav_statistics)
+                {
+                    getStatistics();
+                }
+                else {
+                    if (isCourier)
+                        getDevicesForCourier();
+                    else
+                        getDevicesForTechnician();
+                    if (!isTechnician && !isCourier) {
+                        getCustomers();
+                        if (selectedId == R.id.nav_customers) {
+                            helpDeskAdapter = new RecyclerViewHelpDeskAdapter(customersList);
+                            recyclerView.setAdapter(helpDeskAdapter);
+                        }
                     }
                 }
             }
@@ -409,8 +420,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
                 technicianAdapter = new RecyclerViewTechnicianAdapter(devicesList);
                 recyclerView.setAdapter(technicianAdapter);
-            } else if (id == R.id.nav_statistics) {
-
             } else if (id == R.id.nav_insert_device) {
                 Intent intent = new Intent(this, InsertDeviceActivity.class);
                 startActivityForResult(intent, 2);
@@ -520,6 +529,82 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void startStatisticsActivity() {
+        Helper helper = new Helper();
+        String[] parts = helper.getPrefs(this);
+        final RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
+            average = new TextView(this);
+            total_customers = new TextView(this);
+            total_devices = new TextView(this);
+            total_issues = new TextView(this);
+            Display display = getWindowManager().getDefaultDisplay();
+            w = display.getWidth();
+            h = display.getHeight();
+            progressBar = (ProgressBar) findViewById(R.id.progressBar);
+            progressBar.getLayoutParams().height = h * 95 / 100;
+            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.getIndeterminateDrawable().setColorFilter(
+                    getResources().getColor(R.color.colorPrimaryDark),
+                    PorterDuff.Mode.SRC_IN);
+            RelativeLayout.LayoutParams relativeParams;
+            toastMessage = new TextView(this);
+            toastMessage.setTextColor(Color.WHITE);
+            toastMessage.setTypeface(null, Typeface.BOLD);
+            toastMessage.setPadding(w * 5 / 100, h * 2 / 100, w * 5 / 100, h * 2 / 100);
+            toastMessage.setTextSize((float) (w * 2 / 100));
+            toast = Toast.makeText(getApplicationContext(), null,
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
+            rl.addView(average);
+            rl.addView(total_customers);
+            rl.addView(total_devices);
+            rl.addView(total_issues);
+            relativeParams = (RelativeLayout.LayoutParams) average.getLayoutParams();
+            relativeParams.setMargins(w * 10 / 100, h * 25 / 100, 0, 0);
+            relativeParams.height = h * 10 / 100;
+            average.setLayoutParams(relativeParams);
+            average.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+
+            relativeParams = (RelativeLayout.LayoutParams) total_customers.getLayoutParams();
+            relativeParams.setMargins(w * 10 / 100, h * 35 / 100, 0, 0);
+            relativeParams.height = h * 10 / 100;
+            total_customers.setLayoutParams(relativeParams);
+            total_customers.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+
+            relativeParams = (RelativeLayout.LayoutParams) total_devices.getLayoutParams();
+            relativeParams.setMargins(w * 10 / 100, h * 45 / 100, 0, 0);
+            relativeParams.height = h * 10 / 100;
+            total_devices.setLayoutParams(relativeParams);
+            total_devices.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+
+            relativeParams = (RelativeLayout.LayoutParams) total_issues.getLayoutParams();
+            relativeParams.setMargins(w * 10 / 100, h * 55 / 100, 0, 0);
+            relativeParams.height = h * 10 / 100;
+            total_issues.setLayoutParams(relativeParams);
+            total_issues.setTextSize(TypedValue.COMPLEX_UNIT_PX, w * 4 / 100);
+            getStatistics();
+    }
+
+    private void getStatistics()
+    {
+        String res = null;
+        try {
+            res = new Helper.Get(rl, parts, "statistics").execute().get();
+            JSONObject obj = new JSONObject(res);
+            obj = new JSONObject(obj.getString("stats"));
+            JSONObject json = new JSONObject(obj.getString("avg_issue_lifetime"));
+            average.setText("AVG: " + json.getString("days") + " days, " + json.getString("hours") + " hours, " + json.getString("minutes") + " minutes");
+            total_customers.setText("Total Customers: " + obj.getString("total_customers"));
+            total_devices.setText("Total Devices: " + obj.getString("total_devices"));
+            total_issues.setText("Total Issues: " + obj.getString("total_issues"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void getCustomers() {
         try {
