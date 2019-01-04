@@ -23,7 +23,7 @@ class IssueFindByTrackNumAPI(Resource):
     def get(self):
         args = self.reqparse.parse_args()
         print(args["track_num_list"])
-        if "track_nun_list" not in args:
+        if args["track_num_list"] is None:
             return {"message": "No arguments passed"}, 400
         tracknum_list = args["track_num_list"][0].split(",")
         print(tracknum_list)
