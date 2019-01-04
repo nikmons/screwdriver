@@ -11,6 +11,7 @@ from flask_jwt_extended import (
 )
 from flasgger import Swagger, swag_from
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
@@ -25,6 +26,7 @@ app.config["SWAGGER"] = {"title":"Swagger JWT Authentication App", "uiversion":3
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 swagger_template={
         "openapi": "2.0.0",
@@ -51,6 +53,7 @@ swagger = Swagger(app, template=swagger_template)#, template=swagger_template)
 api = Api(app)
 db =  SQLAlchemy(app)
 jwt = JWTManager(app)
+cors = CORS(app, resources={r"/todo/api/v1.0/statistics" : {"origins":"*"}})
 
 blacklist = set()
 

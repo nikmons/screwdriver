@@ -3,6 +3,7 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.sql import func
+from flask_cors import cross_origin
 
 from app import db
 from models import models
@@ -12,7 +13,7 @@ class StatisticsAPI(Resource):
     def __init__(self):
         super(StatisticsAPI, self).__init__()
 
-    @jwt_required
+    #@jwt_required
     @swag_from("apidocs/statistics_get.yml")
     def get(self):
         emps_helpdesk = self.__get_employees_by_role(3)
