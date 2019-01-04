@@ -11,6 +11,7 @@ from flask_jwt_extended import (
 )
 from flasgger import Swagger, swag_from
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
@@ -25,6 +26,7 @@ app.config["SWAGGER"] = {"title":"Swagger JWT Authentication App", "uiversion":3
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 swagger_template={
         "openapi": "2.0.0",
@@ -51,6 +53,7 @@ swagger = Swagger(app, template=swagger_template)#, template=swagger_template)
 api = Api(app)
 db =  SQLAlchemy(app)
 jwt = JWTManager(app)
+cors = CORS(app, resources={r"/todo/api/v1.0/issues/findByTrackNum" : {"origins":"*"}})
 
 blacklist = set()
 
@@ -76,6 +79,8 @@ from resources.employee_roles import EmployeeRolesAPI
 from resources.user_issues_list import MyIssuesListAPI
 from resources.issue import IssueAPI
 from resources.timeline_list import IssueTimelineAPI
+from resources.issue_by_tracknum import IssueFindByTrackNumAPI
+from resources.statistics import StatisticsAPI
 
 import models
 
@@ -96,7 +101,8 @@ api.add_resource(EmployeeRolesAPI, '/todo/api/v1.0/employees/<int:id>/roles', en
 api.add_resource(MyIssuesListAPI, '/todo/api/v1.0/myissues', endpoint='user_issues')
 api.add_resource(IssueAPI, '/todo/api/v1.0/issues/<int:id>', endpoint='issue')
 api.add_resource(IssueTimelineAPI, '/todo/api/v1.0/myissues/<int:id>/timeline', endpoint='issue_timeline')
-
+api.add_resource(IssueFindByTrackNumAPI, '/todo/api/v1.0/issues/findByTrackNum', endpoint='issue_bytracknum')
+api.add_resource(StatisticsAPI, '/todo/api/v1.0/statistics', endpoint='statistics')
 
 if __name__ == '__main__':
     app.run(debug=True)

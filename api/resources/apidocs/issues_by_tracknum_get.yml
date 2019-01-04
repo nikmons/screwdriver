@@ -1,0 +1,16 @@
+Endpoint to find Issues by Tracking Number
+---
+tags:
+  - Issues
+parameters:
+  - name: track_num_list
+    in: query
+    type: header
+    collectionFormat: csv
+    description: The id of the issue to get
+    items:
+      type: string
+responses:
+  200:
+    description: "Issues Retrieved successfully"
+    #2E476CFC2F 32D80F21B3

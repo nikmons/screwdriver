@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -8,17 +8,7 @@ import datetime
 from app import db
 from models import models
 
-issues_fields = {
-    'Issue_id': fields.Integer,
-    'Dev_id': fields.Integer,
-    'Cust_id': fields.Integer,
-    'Stat_id': fields.Integer,
-    'Prob_id': fields.Integer, # Fix typo
-    'Issue_Created': fields.DateTime,
-    'Issue_Closed': fields.DateTime,
-    'Issue_Created_By': fields.Integer,
-    'Issue_Assigned_To': fields.Integer    
-}
+from resources.fields import issues_fields
 
 class MyIssuesListAPI(Resource):
 

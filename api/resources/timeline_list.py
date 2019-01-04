@@ -1,20 +1,14 @@
 import datetime
 
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
 
-timeline_fields = {
-    'Issue_id': fields.Integer,
-    'Emp_id': fields.Integer,
-    'Act_id': fields.Integer,
-    'Ist_Comment': fields.String,
-    'Ist_Created': fields.DateTime
-}
+from resources.fields import timeline_fields
 
 class IssueTimelineAPI(Resource):
 
@@ -70,6 +64,7 @@ class IssueTimelineAPI(Resource):
             print("Assign to QA")
             qa = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=5).all()]
             issue.Issue_Assigned_To = qa[0].Emp_id
+            issue.Stat_id = 2
         elif new_action.Act_Name == "Undamaged" or new_action.Act_Name == "Unrepairable" or new_action.Act_Name == "Tested-Fixed":
             # Assign to Helpdesk
             print("Assign to Helpdesk")
@@ -79,14 +74,17 @@ class IssueTimelineAPI(Resource):
             elif issue.Issue_Delivery_At == "Home":
                 courrier = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=4).all()]
                 issue.Issue_Assigned_To = courrier[0].Emp_id
+            issue.Stat_id = 3
         elif new_action.Act_Name == "Tested-Unfixed":
             # Assign to Technician for recheck
             print("Assign to Technician")
             technician = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=1).all()]
             issue.Issue_Assigned_To = technician[0].Emp_id
+            issue.Stat_id = 1
         elif new_action.Act_Name == "Returned":
             print("Close it")
             issue.Issue_Closed = datetime.datetime.utcnow()
             issue.Issue_Assigned_To = None
+            issue.Stat_id = 4
         print("+++++++++++++++")
         db.session.commit()

@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, make_response, session
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse, marshal
 from flasgger import swag_from
 from utils.secure_creds import check_password
 
