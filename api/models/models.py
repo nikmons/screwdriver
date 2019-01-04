@@ -128,7 +128,6 @@ class Action_Stmdl(db.Model):
     Acst_id = Column(Integer, primary_key = True)
     Act_id_from = Column(Integer, ForeignKey("Action.Act_id"))
     Act_id_to = Column(Integer, ForeignKey("Action.Act_id"))
-    #Act_role_change = Column(Integer, ForeignKey("Roles.Role_id"))
     
     transition_to = relationship('Action', backref='trans_to', foreign_keys=[Act_id_to])
     transition_from = relationship('Action', backref='trans_from', foreign_keys=[Act_id_from])
@@ -176,5 +175,6 @@ class Issues (db.Model):
      Issue_Delivery_At = Column(String)     
      
      child_Issues = relationship("Issue_Timeline")
+     status_name = relationship("State", backref="status_name", foreign_keys=[Stat_id])
      #emp_relationship = relationship("Employees")
 #______________________R  E  D________________________________________>

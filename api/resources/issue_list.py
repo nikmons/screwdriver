@@ -48,6 +48,7 @@ class IssueListAPI(Resource):
         print("Printing First [0] ", technicians[0])
         issue.Issue_Assigned_To = technicians[0].Emp_id
         issue.Issue_Track_Num = uuid.uuid4().hex[:10].upper()
+        
 
         db.session.add(issue)
         db.session.commit()

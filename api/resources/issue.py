@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from models import models
 
-from resources.fields import issues_fields
+from resources.fields import issues_fields, action_fields
 
 class IssueAPI(Resource):
 
