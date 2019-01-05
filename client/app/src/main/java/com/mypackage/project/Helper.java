@@ -60,7 +60,7 @@ public class Helper {
         @Override
         protected String doInBackground(String... arg0) {
             try {
-                String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
+                String link = "https://screwdriver-api-heroku.herokuapp.com/api/" + prefix;
                 HttpClient client = new DefaultHttpClient();
                 HttpGet request = new HttpGet();
                 request.addHeader("Authorization", "Bearer " + parts[0]);
@@ -129,7 +129,7 @@ public class Helper {
             try {
                 Gson gson = new Gson();
                 String json = gson.toJson(obj);
-                String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
+                String link = "https://screwdriver-api-heroku.herokuapp.com/api/" + prefix;
                 HttpClient client = new DefaultHttpClient();
                 HttpPost httpPost = new HttpPost(link);
                 if (parts != null)
@@ -189,9 +189,9 @@ public class Helper {
             try {
                 String link;
                 if (id == -1)
-                    link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
+                    link = "https://screwdriver-api-heroku.herokuapp.com/api/" + prefix;
                 else
-                    link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix + "/" + id;
+                    link = "https://screwdriver-api-heroku.herokuapp.com/api/" + prefix + "/" + id;
                 HttpClient client = new DefaultHttpClient();
                 HttpDelete httpDelete = new HttpDelete(link);
                 httpDelete.addHeader("Authorization", "Bearer " + parts[0]);

@@ -171,7 +171,7 @@ and open the template in the editor.
                 <div class="resultsText">Welcome to our Tracking Number System</div>
                 <div class="frame">
                     <div class="text">Add comma (,) between tracking numbers</div>
-                    <input type="text" id="textField" placeholder="Tracking Number(s)" value="9B322A888F,04044E131B,2F1CE8FA62"/>
+                    <input type="text" id="textField" placeholder="Tracking Number(s)" value="8AD264A702,37E6DA6135,5CC7A8EBA4,D224DC5DF4,5C1E68BDA9,C3D065ECD8,5DB276D6FE,381B6D20B6"/>
                     <button onclick="onclickbtn()">Submit</button>
                 </div>
                 <div class="results" style="display: none">
@@ -192,6 +192,7 @@ and open the template in the editor.
             <script>
                 var trackingNumbersFound;
                 var trackingNumbersNotFound;
+                var textIssues;
                 var issues;
                 function foundTrackingNumbers()
                 {
@@ -200,35 +201,7 @@ and open the template in the editor.
                     {
                         var li = document.createElement('li');
                         li.innerHTML = trackingNumbersFound[i];
-                        if (issues[i]["status_name.Stat_Name"] == null)
-                            li.innerHTML += " (On the queue)";
-                        else if (issues[i]["status_name.Stat_Name"] == "To be Repaired" || issues[i]["status_name.Stat_Name"] == "Under QA")
-                            li.innerHTML += " (Still Fixing)";
-                        else
-                        {
-                            if (issues[i].Issue_Delivery_At == "Store")
-                            {
-                                if (issues[i].Issue_Closed != null)
-                                {
-                                    li.innerHTML += " (Received from the Store)";
-                                }
-                                else
-                                {
-                                    li.innerHTML += " (Fixed - Waiting for customer)";
-                                }
-                            }
-                            else
-                            {
-                                if (issues[i].Issue_Closed != null)
-                                {
-                                    li.innerHTML += " (Delivered to home)";
-                                }
-                                else if (issues[i]["status_name.Stat_Name"] == "Pickup-Delivery")
-                                {
-                                    li.innerHTML += " (On Road)";
-                                }
-                            }
-                        }
+                        li.innerHTML += textIssues[i];
                         document.getElementsByTagName("p")[0].appendChild(li);
                     }
                 }
@@ -269,6 +242,7 @@ and open the template in the editor.
                         _class.removeChild(_class.lastChild);
                     }
                     var text = document.getElementById("textField").value.trim();
+                    var trackingNumbersToSend;
                     if (text.length == 0)
                     {
                         alert("The field cannot be empty!");
@@ -277,8 +251,11 @@ and open the template in the editor.
                         var error = 0;
                         var trackingNumb = "";
                         var trackingNumbers = text.toString().split(",");
+                        trackingNumbersToSend = trackingNumbers[0].trim();
                         for (var i = 0; i < trackingNumbers.length; i++)
                         {
+                            if (i > 0)
+                                trackingNumbersToSend += "," + trackingNumbers[i].trim();
                             if (trackingNumbers[i].trim().length != 10 || trackingNumbers[i].trim().indexOf(' ') >= 0)
                             {
                                 trackingNumb = trackingNumbers[i];
@@ -292,14 +269,17 @@ and open the template in the editor.
                         {
                             document.getElementsByClassName("loader")[0].style.display = "block";
                             $.ajax({
-                                url: "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/issues/findByTrackNum?track_num_list=" + text,
+                                url: "https://screwdriver-api-heroku.herokuapp.com/api/issues/findByTrackNum?track_num_list=" + trackingNumbersToSend,
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function (result) {
                                     trackingNumbersFound = new Array();
                                     trackingNumbersNotFound = new Array();
+                                    textIssues = new Array();
                                     issues = new Array();
                                     var height = screen.height;
+                                    var count = 0;
+                                    trackingNumbers = trackingNumbersToSend.toString().split(",");
                                     for (var j = 0; j < trackingNumbers.length; j++)
                                     {
                                         var found = 0;
@@ -307,35 +287,66 @@ and open the template in the editor.
                                         {
                                             if (trackingNumbers[j] == result.Issues[i].Issue_Track_Num)
                                             {
+                                                var _text;
                                                 issues.push(result.Issues[i]);
+                                                if (result.Issues[i].state == "To be Repaired")
+                                                    _text = " (Still Fixing)";
+                                                else if (result.Issues[i].state == "Under QA")
+                                                    _text = " (Quality Assurance)";
+                                                else
+                                                {
+                                                    if (result.Issues[i].Issue_Delivery_At == "Store")
+                                                    {
+                                                        if (result.Issues[i].Issue_Closed != null)
+                                                        {
+                                                            _text = " (Received from the Store)";
+                                                        }
+                                                        else
+                                                        {
+                                                            _text = " (Fixed - Waiting for customer)";
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (result.Issues[i].Issue_Closed != null)
+                                                        {
+                                                            _text = " (Delivered to home)";
+                                                        }
+                                                        else if (result.Issues[i].state == "Pickup-Delivery")
+                                                        {
+                                                            _text = " (On Road)";
+                                                        }
+                                                    }
+                                                }
+                                                textIssues.push(_text);
                                                 found = 1;
                                                 var div = document.createElement('div');
-                                                div.id = 'block' + i;
+                                                div.id = 'block' + count;
                                                 div.className = 'block';
                                                 div.style.height = height * 18 / 100 + "px";
                                                 div.onclick = function () {
                                                     var index = this.id.toString().substring(this.id.toString().indexOf("k") + 1);
-                                                    alert("Tracking Number: " + trackingNumbersFound[index].trim());
+                                                    alert("Tracking Number: " + trackingNumbersFound[index] + "" + textIssues[index]);
                                                 };
                                                 document.getElementsByClassName("results")[0].appendChild(div);
                                                 div = document.createElement('div');
-                                                div.id = 'centeredblock' + i;
+                                                div.id = 'centeredblock' + count;
                                                 div.className = 'centeredblock';
-                                                document.getElementById('block' + i).appendChild(div);
+                                                document.getElementById('block' + count).appendChild(div);
                                                 var img = document.createElement('img');
-                                                if (result.Issues[i]["status_name.Stat_Name"] == "To be Repaired" || result.Issues[i]["status_name.Stat_Name"] == null)
+                                                if (result.Issues[i].state == "To be Repaired" || result.Issues[i].state == "Under QA")
                                                     img.src = "img/service.png";
                                                 else
                                                     img.src = "img/service_completed.png";
                                                 img.className = 'img1';
-                                                document.getElementById('centeredblock' + i).appendChild(img);
+                                                document.getElementById('centeredblock' + count).appendChild(img);
                                                 img = document.createElement('img');
                                                 img.src = "img/arrow.png";
                                                 img.className = 'arrow1';
-                                                document.getElementById('centeredblock' + i).appendChild(img);
+                                                document.getElementById('centeredblock' + count).appendChild(img);
                                                 img = document.createElement('img');
                                                 img.className = 'img2';
-                                                document.getElementById('centeredblock' + i).appendChild(img);
+                                                document.getElementById('centeredblock' + count).appendChild(img);
                                                 if (result.Issues[i].Issue_Delivery_At == "Store")
                                                 {
                                                     if (result.Issues[i].Issue_Closed != null)
@@ -355,37 +366,38 @@ and open the template in the editor.
                                                         img = document.createElement('img');
                                                         img.src = "img/arrow.png";
                                                         img.className = 'arrow2';
-                                                        document.getElementById('centeredblock' + i).appendChild(img);
+                                                        document.getElementById('centeredblock' + count).appendChild(img);
                                                         img = document.createElement('img');
                                                         img.src = "img/house_completed.png";
                                                         img.className = 'img3';
-                                                        document.getElementById('centeredblock' + i).appendChild(img);
+                                                        document.getElementById('centeredblock' + count).appendChild(img);
                                                     }
-                                                    else if (result.Issues[i]["status_name.Stat_Name"] == null || result.Issues[i]["status_name.Stat_Name"] == "Under QA")
-                                                    {
-                                                        img.src = "img/truck.png";
-                                                        img = document.createElement('img');
-                                                        img.src = "img/arrow.png";
-                                                        img.className = 'arrow2';
-                                                        document.getElementById('centeredblock' + i).appendChild(img);
-                                                        img = document.createElement('img');
-                                                        img.src = "img/house.png";
-                                                        img.className = 'img3';
-                                                        document.getElementById('centeredblock' + i).appendChild(img);
-                                                    }
-                                                    else if (result.Issues[i]["status_name.Stat_Name"] == "Pickup-Delivery")
+                                                    else if (result.Issues[i].state == "Pickup-Delivery")
                                                     {
                                                         img.src = "img/truck_completed.png";
                                                         img = document.createElement('img');
                                                         img.src = "img/arrow.png";
                                                         img.className = 'arrow2';
-                                                        document.getElementById('centeredblock' + i).appendChild(img);
+                                                        document.getElementById('centeredblock' + count).appendChild(img);
                                                         img = document.createElement('img');
                                                         img.src = "img/house.png";
                                                         img.className = 'img3';
-                                                        document.getElementById('centeredblock' + i).appendChild(img);
+                                                        document.getElementById('centeredblock' + count).appendChild(img);
+                                                    }
+                                                    else
+                                                    {
+                                                        img.src = "img/truck.png";
+                                                        img = document.createElement('img');
+                                                        img.src = "img/arrow.png";
+                                                        img.className = 'arrow2';
+                                                        document.getElementById('centeredblock' + count).appendChild(img);
+                                                        img = document.createElement('img');
+                                                        img.src = "img/house.png";
+                                                        img.className = 'img3';
+                                                        document.getElementById('centeredblock' + count).appendChild(img);
                                                     }
                                                 }
+                                                count++;
                                                 break;
                                             }
                                         }
@@ -407,7 +419,8 @@ and open the template in the editor.
                                     }
 
                                     document.getElementsByClassName("loader")[0].style.display = "none";
-                                },
+                                }
+                                ,
                                 error: function (ex) {
                                     alert(ex.statusText);
                                 }

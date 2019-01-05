@@ -49,20 +49,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mainActivity = this;
+        Display display = getWindowManager().getDefaultDisplay();
+        w = display.getWidth();
+        h = display.getHeight();
+        toastMessage = new TextView(this);
+        toastMessage.setTextColor(Color.WHITE);
+        toastMessage.setTypeface(null, Typeface.BOLD);
+        toastMessage.setPadding(w * 5 / 100, h * 2 / 100, w * 5 / 100, h * 2 / 100);
+        toastMessage.setTextSize((float) (w * 2 / 100));
+        toast = Toast.makeText(getApplicationContext(), null,
+                Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
         Helper helper = new Helper();
-        String[] parts = helper.getPrefs(this);
-        if (parts[0] != null && parts[0].length() > 0)
-        {
-            Intent intent = new Intent(mainActivity, HomeActivity.class);
-            startActivity(intent);
-            finish();
+        if (!Helper.isOnline(getApplicationContext())) {
+            toastMessage.setBackgroundColor(Color.parseColor("#B81102"));
+            toastMessage.setText("No internet connection!");
+            toast.setView(toastMessage);
+            toast.show();
+        }
+        else {
+            String[] parts = helper.getPrefs(this);
+            if (parts[0] != null && parts[0].length() > 0) {
+                Intent intent = new Intent(mainActivity, HomeActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
         final RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl) ;
         user = (EditText) findViewById(R.id.user);
         pass = (EditText) findViewById(R.id.pass);
-        Display display = getWindowManager().getDefaultDisplay();
-        w = display.getWidth();
-        h = display.getHeight();
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.getLayoutParams().height = h * 95 / 100;
         progressBar.setVisibility(View.INVISIBLE);
@@ -72,14 +87,6 @@ public class MainActivity extends AppCompatActivity {
         logIn = (Button) findViewById(R.id.logIn);
         text = (TextView) findViewById(R.id.myText);
         RelativeLayout.LayoutParams relativeParams;
-        toastMessage = new TextView(this);
-        toastMessage.setTextColor(Color.WHITE);
-        toastMessage.setTypeface(null, Typeface.BOLD);
-        toastMessage.setPadding(w * 5 / 100, h * 2 / 100, w * 5 / 100, h * 2 / 100);
-        toastMessage.setTextSize((float) (w * 2 / 100));
-        toast = Toast.makeText(getApplicationContext(), null,
-                Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, h * 3 / 100);
         relativeParams = (RelativeLayout.LayoutParams) text.getLayoutParams();
         relativeParams.setMargins(0, h * 5 / 100, 0, 0);
         relativeParams.width = w;
