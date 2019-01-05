@@ -14,13 +14,14 @@ flask-migrate = "*"
 flask-script = "*"
 "psycopg2" = "*"
 python-dotenv = "*"
-flasgger = "*"
 rope = "*"
 pylint-flask = "*"
 flask-login = "*"
 flask-jwt-extended = "*"
 py-bcrypt = "*"
 flask-cors = "*"
+flasgger = "*"
+pyyaml = ">=4.2b1"
 
 [dev-packages]
 
