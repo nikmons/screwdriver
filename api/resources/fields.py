@@ -39,7 +39,7 @@ issues_fields = {
     'Issue_id': fields.Integer,
     'Dev_id': fields.Integer,
     'Cust_id': fields.Integer,
-    'status_name.Stat_Name': fields.String,
+    'state': fields.String(attribute='status_name.Stat_Name'),
     'Prob_id': fields.Integer, # Fix typo
     'Issue_Created': fields.DateTime,
     'Issue_Closed': fields.DateTime,
