@@ -469,14 +469,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void getDevicesForTechnician() {
         try {
             currentDevices = new ArrayList<>();
-            String res = new Helper.Get(rl, parts, "myissues").execute().get();
-            JSONArray jsonArray = new JSONArray(res);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = new JSONObject(jsonArray.get(i).toString());
-                issueIds.add(obj.getInt("Issue_id"));
-                String result = new Helper.Get(rl, parts, "devices/" + obj.getInt("Dev_id")).execute().get();
-                DeviceModel devModel = gson.fromJson(result, DeviceModel.class);
-                currentDevices.add(devModel);
+            if (!isTechnician)
+            {
+                String json = new Helper.Get(rl, parts, "devices").execute().get();
+                JSONArray jsonArray = new JSONArray(json);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = new JSONObject(jsonArray.get(i).toString());
+                    DeviceModel devModel = gson.fromJson(obj.toString(), DeviceModel.class);
+                    currentDevices.add(devModel);
+                }
+            }
+            else {
+                String res = new Helper.Get(rl, parts, "myissues").execute().get();
+                JSONArray jsonArray = new JSONArray(res);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = new JSONObject(jsonArray.get(i).toString());
+                    issueIds.add(obj.getInt("Issue_id"));
+                    String result = new Helper.Get(rl, parts, "devices/" + obj.getInt("Dev_id")).execute().get();
+                    DeviceModel devModel = gson.fromJson(result, DeviceModel.class);
+                    currentDevices.add(devModel);
+                }
             }
             devicesList = new ArrayList<>();
             for (DeviceModel itemModel : currentDevices) {
