@@ -38,7 +38,7 @@ public class QRCodeActivity extends AppCompatActivity {
     private int width, height;
     private ImageView imageView;
     private String qrCodeStr;
-    private int issueId;
+    private int issueId, availActionId;
     private List<Integer> availActionIds = new ArrayList<Integer>();
     private List<String> availActionNames = new ArrayList<String>();
     private String[] parts;
@@ -91,6 +91,7 @@ public class QRCodeActivity extends AppCompatActivity {
             name.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                    availActionId = availActionIds.get(position);
                     qrCodeStr = parts[0] + " " +  issueId + " " + availActionIds.get(position) + " " + editText.getText();
                     generateQRCode(qrCodeStr);
                 }
@@ -119,19 +120,19 @@ public class QRCodeActivity extends AppCompatActivity {
             name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
 
             relativeParams = (RelativeLayout.LayoutParams) editText.getLayoutParams();
-            relativeParams.setMargins(width * 25 / 100, height * 54 / 100, 0, 0);
+            relativeParams.setMargins(width * 25 / 100, height * 58 / 100, 0, 0);
             relativeParams.width = width * 50 / 100;
             editText.setLayoutParams(relativeParams);
             Button btn = (Button) findViewById(R.id.button);
             relativeParams = (RelativeLayout.LayoutParams) btn.getLayoutParams();
-            relativeParams.setMargins(width * 30 / 100, height * 12 / 100, 0, 0);
+            relativeParams.setMargins(width * 30 / 100, height * 16 / 100, 0, 0);
             relativeParams.height = height * 12 / 100;
             relativeParams.width = width * 40 / 100;
             btn.setLayoutParams(relativeParams);
             btn.setOnClickListener(new View.OnClickListener() {
 
                 public void onClick(View v) {
-                    qrCodeStr = qrCodeStr + " " + editText.getText();
+                    qrCodeStr = parts[0] + " " +  issueId + " " + availActionId + " " + editText.getText();
                     generateQRCode(qrCodeStr);
                 }
             });
