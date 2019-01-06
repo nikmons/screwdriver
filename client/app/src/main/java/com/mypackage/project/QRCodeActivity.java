@@ -125,7 +125,7 @@ public class QRCodeActivity extends AppCompatActivity {
             editText.setLayoutParams(relativeParams);
             Button btn = (Button) findViewById(R.id.button);
             relativeParams = (RelativeLayout.LayoutParams) btn.getLayoutParams();
-            relativeParams.setMargins(width * 30 / 100, height * 16 / 100, 0, 0);
+            relativeParams.setMargins(width * 30 / 100, height * 12 / 100, 0, 0);
             relativeParams.height = height * 12 / 100;
             relativeParams.width = width * 40 / 100;
             btn.setLayoutParams(relativeParams);
