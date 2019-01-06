@@ -34,7 +34,7 @@ public class Helper {
             try {
                 Gson gson = new Gson();
                 String json = gson.toJson(obj);
-                String link = "https://screwdriver-api-heroku.herokuapp.com/todo/api/v1.0/" + prefix;
+                String link = "https://screwdriver-api-heroku.herokuapp.com/api/" + prefix;
                 HttpClient client = new DefaultHttpClient();
                 HttpPost httpPost = new HttpPost(link);
                 httpPost.addHeader("Authorization", "Bearer " + accessToken);
