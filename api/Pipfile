@@ -22,6 +22,7 @@ py-bcrypt = "*"
 flask-cors = "*"
 flasgger = "*"
 pyyaml = ">=4.2b1"
+requests = "*"
 
 [dev-packages]
 
