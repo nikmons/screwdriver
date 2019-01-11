@@ -60,7 +60,7 @@ class IssueListAPI(Resource):
         print("Prepare to send mail to {}".format(cust_mail))
 
         subject = "MobiRepair Repair Progress"
-        content = "You can track the progress of your repair for Device [{}] using the following tracking number [{}]".format(dev_fmt, issue.Issue_Track_Num)
+        content = "You can track the progress of your repair for Device [{}] using the following tracking number [{}] (Tracker URL https://screwdriver-API-Heroku.herokuapp.com/)".format(dev_fmt, issue.Issue_Track_Num)
 
         email_notifier.send_simple_message(cust_mail, content)
 
