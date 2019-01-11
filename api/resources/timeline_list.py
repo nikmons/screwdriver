@@ -56,7 +56,7 @@ class IssueTimelineAPI(Resource):
         timeline_entry = models.Issue_Timeline(Issue_id=id,                         \
             Emp_id=emp_id, Act_id=args["Act_id"], Ist_Comment=args["Ist_Comment"])
 
-        self.__issue_transition(issue, cust, action_added)
+        self.__issue_transition(cust, issue, action_added)
 
         db.session.add(timeline_entry)
         db.session.commit()
