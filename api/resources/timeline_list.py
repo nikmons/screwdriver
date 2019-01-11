@@ -100,5 +100,3 @@ class IssueTimelineAPI(Resource):
         email_notifier.send_simple_message(cust.Cust_Email, mail_body)
         print("+++++++++++++++")
         db.session.commit()
-
-    def _mail_body():
