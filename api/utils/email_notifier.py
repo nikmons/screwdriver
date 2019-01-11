@@ -1,7 +1,9 @@
 import os
 import requests
 
-def send_simple_message(to, subject, content):
+MAIL_SUBJECT = "MobiRepair Repair Progress"
+
+def send_simple_message(to, content):
     api_key = os.getenv("MAILGUN_API_KEY")
     domain = os.getenv("MAILGUN_DOMAIN")
 
@@ -10,7 +12,8 @@ def send_simple_message(to, subject, content):
         auth=("api", "{}".format(api_key)),
         data={"from": "MobiRepair <mailgun@{}>".format(domain),
               "to": [to],
-              "subject": subject,
+              "subject": MAIL_SUBJECT,
               "text": content})
 
     print(resp.status_code)
+    return resp

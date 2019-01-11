@@ -7,6 +7,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
 from models import models
+from utils import email_notifier
 
 from resources.fields import timeline_fields
 
@@ -43,6 +44,8 @@ class IssueTimelineAPI(Resource):
         print(args)
 
         issue = models.Issues.query.filter_by(Issue_id=id).first()
+        cust = models.Customers.query.filter_by(Cust_id=issue.Cust_id).first()
+
         if issue is None:
             return {"message" : "Issue '{}' does not exist".format(id)}, 400
 
@@ -53,27 +56,33 @@ class IssueTimelineAPI(Resource):
         timeline_entry = models.Issue_Timeline(Issue_id=id,                         \
             Emp_id=emp_id, Act_id=args["Act_id"], Ist_Comment=args["Ist_Comment"])
 
-        self.__issue_transition(issue, action_added)
+        self.__issue_transition(issue, cust, action_added)
 
         db.session.add(timeline_entry)
         db.session.commit()
 
-    def __issue_transition(self, issue, new_action):
+    def __issue_transition(self, cust, issue, new_action):
+        fullname = cust.Cust_First_Name + " " + cust.Cust_Last_Name
+        mail_body = "Dear {}, Status update for Tracking Number {}".format("{} {}".format(fullname, issue.Issue_Track_Num))
+
         if new_action.Act_Name == "Fixed":
             # Assign to QA
             print("Assign to QA")
             qa = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=5).all()]
             issue.Issue_Assigned_To = qa[0].Emp_id
             issue.Stat_id = 2
+            mail_body = mail_body + "Device has been fixed, Awaiting QA Testing"
         elif new_action.Act_Name == "Undamaged" or new_action.Act_Name == "Unrepairable" or new_action.Act_Name == "Tested-Fixed":
             # Assign to Helpdesk
             print("Assign to Helpdesk")
             if issue.Issue_Delivery_At == "Store":
                 helpdesk = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=3).all()]
                 issue.Issue_Assigned_To = helpdesk[0].Emp_id
+                mail_body = mail_body + "Device is ready to be picked up at designated store"
             elif issue.Issue_Delivery_At == "Home":
                 courrier = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=4).all()]
                 issue.Issue_Assigned_To = courrier[0].Emp_id
+                mail_body = mail_body + "Device is out for delivery at home"
             issue.Stat_id = 3
         elif new_action.Act_Name == "Tested-Unfixed":
             # Assign to Technician for recheck
@@ -81,10 +90,15 @@ class IssueTimelineAPI(Resource):
             technician = [emp_role.master_employee for emp_role in models.Emp_Roles.query.filter_by(Role_id=1).all()]
             issue.Issue_Assigned_To = technician[0].Emp_id
             issue.Stat_id = 1
+            mail_body = mail_body + "Device under investigation/repair"
         elif new_action.Act_Name == "Returned":
             print("Close it")
             issue.Issue_Closed = datetime.datetime.utcnow()
             issue.Issue_Assigned_To = None
             issue.Stat_id = 4
+            mail_body = mail_body + "Thank you for choosing MobiRepair!"
+        email_notifier.send_simple_message(cust.Cust_Email, mail_body)
         print("+++++++++++++++")
         db.session.commit()
+
+    def _mail_body():
