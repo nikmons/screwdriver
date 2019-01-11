@@ -2,7 +2,7 @@
 import os
 import datetime
 
-from flask import Flask, jsonify, abort, make_response#, session
+from flask import Flask, jsonify, abort, make_response, render_template
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -103,6 +103,11 @@ api.add_resource(IssueAPI, '/api/issues/<int:id>', endpoint='issue')
 api.add_resource(IssueTimelineAPI, '/api/myissues/<int:id>/timeline', endpoint='issue_timeline')
 api.add_resource(IssueFindByTrackNumAPI, '/api/issues/findByTrackNum', endpoint='issue_bytracknum')
 api.add_resource(StatisticsAPI, '/api/statistics', endpoint='statistics')
+
+@app.route("/")
+@app.route("/index")
+def index():
+    return render_template("index.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
