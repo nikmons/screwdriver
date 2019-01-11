@@ -63,7 +63,7 @@ class IssueTimelineAPI(Resource):
 
     def __issue_transition(self, cust, issue, new_action):
         fullname = cust.Cust_First_Name + " " + cust.Cust_Last_Name
-        mail_body = "Dear {}, Status update for Tracking Number {}".format("{} {}".format(fullname, issue.Issue_Track_Num))
+        mail_body = "Dear {}, Status update for Tracking Number {}".format(fullname, issue.Issue_Track_Num)
 
         if new_action.Act_Name == "Fixed":
             # Assign to QA
