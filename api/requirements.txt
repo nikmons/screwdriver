@@ -30,7 +30,7 @@ mistune==0.8.4
 more-itertools==8.0.2
 psycopg2==2.8.4
 py-bcrypt==0.4
-PyJWT==1.7.1
+PyJWT==2.4.0
 pylint==2.4.4
 pylint-flask==0.6
 pylint-plugin-utils==0.6
